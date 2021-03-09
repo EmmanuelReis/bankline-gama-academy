@@ -1,9 +1,7 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.models;
 
 public enum PlanoContaEnum {
-	RECEITA(1, "R", "RECEITA"), DESPESA(2, "D", "DESPESA"),
-	TRANSFERENCIA_ENTRE_CONTAS(3, "TC", "TRANSFERENCIA ENTRE CONTAS"),
-	TRANSFERENCIA_ENTRE_USUARIOS(4, "TU", "TRANSFERENCIA ENTRE USUARIOS");
+	RECEITA(1, "R", "RECEITA"), DESPESA(2, "D", "DESPESA"), TRANSFERENCIA(3, "T", "TRANSFERENCIA");
 
 	public int id;
 	public String sigla;

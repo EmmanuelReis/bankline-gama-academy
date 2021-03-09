@@ -1,10 +1,9 @@
 -- create database if not exists bankline;
 
-drop table if exists conta;
 drop table if exists transacoes;
+drop table if exists conta;
 drop table if exists usuario;
 drop table if exists plano_conta;
-drop table if exists tipo_conta;
 
 create table usuario(
 	id bigint not null auto_increment primary key,
@@ -13,14 +12,6 @@ create table usuario(
 	nome varchar(50),
 	cpf varchar(11) not null unique
 )auto_increment = 1;
-
-
-create table tipo_conta(
-	id integer not null,
-	nome varchar(50) not null,
-	primary key(id)
-);
-
 
 create table plano_conta(
 	id integer not null,
@@ -34,9 +25,7 @@ create table conta(
 	numero bigint not null unique,
 	saldo double,
 	id_usuario bigint,
-	id_tipo_conta integer
-	,foreign key (id_usuario) references usuario(id)
-	,foreign key (id_tipo_conta) references tipo_conta(id)
+	foreign key (id_usuario) references usuario(id)	
 )auto_increment = 1;
 
 
@@ -50,12 +39,8 @@ create table transacoes(
 	,foreign key (id_plano_conta) references plano_conta(id)
 )auto_increment = 1;
 
--- Adicionando Dom�nios
-
-insert into tipo_conta values(1,'BANCO');
-insert into tipo_conta values(2,'CREDITO');
+-- Adicionando DomÃ­nios
 
 insert into plano_conta values(1,'R','RECEITA');
 insert into plano_conta values(2,'D','DESPESA');
-insert into plano_conta values(3,'TC','TRANSFERENCIA ENTRE CONTAS');
-insert into plano_conta values(4,'TU','TRANSFERENCIA ENTRE USUARIOS');
+insert into plano_conta values(3,'T','TRANSFERENCIA');

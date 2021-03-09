@@ -12,5 +12,4 @@ public class Conta {
 	private long numero;
 	private double saldo;
 	private Usuario usuario;
-	private TipoConta tipo;
 }
