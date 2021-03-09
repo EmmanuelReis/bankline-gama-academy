@@ -6,7 +6,7 @@ public interface DefaultRepository<T> {
 
 	public int salvar(T entity);
 
-	public void alterar(int id, T entity);
+	public void alterar(int id, T entity) throws Exception;
 
 	public void excluir(int id);
 

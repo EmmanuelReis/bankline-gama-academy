@@ -1,5 +1,6 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -55,5 +56,29 @@ public class TestApp {
 		int id = userRepo.salvar(u);
 		assertTrue(id > 0);
 	}
+	
+	@Test
+	@DisplayName("Testando salvar novo usuário e verificar se o id está sendo retornado")
+	public void alterarUsuario() throws Exception {
+		Usuario u = userRepo.buscaPorLogin("gabriel");		
+		u.setNome("albuquerque gabriel");
+		u.setSenha("456");
+
+		userRepo.alterar(u.getId(),u);
+		Usuario q = userRepo.buscaPorLogin("gabriel");
+		assertEquals(q.getNome(), "albuquerque gabriel");
+		assertEquals(q.getSenha(), "456");
+	}
+	
+	/*
+	 * @Test
+	 * 
+	 * @DisplayName("Testando salvar novo usuário e verificar se o id está sendo retornado"
+	 * ) public void criarNovoUsuario() { Usuario u = new Usuario();
+	 * u.setCpf("12345678901"); u.setLogin("gabriel");
+	 * u.setNome("gabriel albuquerque"); u.setSenha("123");
+	 * 
+	 * int id = userRepo.salvar(u); assertTrue(id > 0); }
+	 */
 
 }
