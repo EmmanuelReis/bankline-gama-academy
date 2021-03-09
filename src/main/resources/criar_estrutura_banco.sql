@@ -1,6 +1,6 @@
 -- create database if not exists bankline;
 
-drop table if exists transacoes;
+drop table if exists transacao;
 drop table if exists conta;
 drop table if exists usuario;
 drop table if exists plano_conta;
@@ -29,13 +29,15 @@ create table conta(
 )auto_increment = 1;
 
 
-create table transacoes(
+create table transacao(
 	id bigint not null auto_increment primary key,
 	`data` date,
 	valor double,
-	id_conta bigint,
+	id_conta_origem bigint,
+	id_conta_destino bigint,
 	id_plano_conta integer
-	,foreign key (id_conta) references conta(id)
+	,foreign key (id_conta_origem) references conta(id)
+	,foreign key (id_conta_destino) references conta(id)
 	,foreign key (id_plano_conta) references plano_conta(id)
 )auto_increment = 1;
 
