@@ -39,9 +39,8 @@ create table transacoes(
 	,foreign key (id_plano_conta) references plano_conta(id)
 )auto_increment = 1;
 
--- Adicionando Domínios
+-- Adicionando DomÃ­nios
 
 insert into plano_conta values(1,'R','RECEITA');
 insert into plano_conta values(2,'D','DESPESA');
-insert into plano_conta values(3,'TC','TRANSFERENCIA ENTRE CONTAS');
-insert into plano_conta values(4,'TU','TRANSFERENCIA ENTRE USUARIOS');
+insert into plano_conta values(3,'T','TRANSFERENCIA');
