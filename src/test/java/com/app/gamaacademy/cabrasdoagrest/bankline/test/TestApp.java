@@ -48,9 +48,9 @@ public class TestApp {
 	@DisplayName("Testando salvar novo usuário e verificar se o id está sendo retornado")
 	public void criarNovoUsuario() throws Exception {
 		Usuario u = new Usuario();
-		u.setCpf("12345678901");
-		u.setLogin("gabriel");
-		u.setNome("gabriel albuquerque");
+		u.setCpf("12345678932");
+		u.setLogin("wederson");
+		u.setNome("wederson");
 		u.setSenha("123");
 
 		int id = userRepo.salvar(u);

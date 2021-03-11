@@ -26,14 +26,11 @@ public class UsuarioServiceImpl implements DefaultService<Usuario> {
 		int idUsuario = isUpdate ? dadoPersistido.getId() : 0;
 		int idConta = 0;
 
-		// validar objeto
-		try {
-
-			validar(usuario);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		/*
+		 * try {
+		 * 
+		 * validar(usuario); } catch (Exception e) { e.printStackTrace(); }
+		 */
 
 		// persistir objeto
 		try {

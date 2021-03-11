@@ -1,5 +1,6 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,8 +18,17 @@ public class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
+
+	@Column(unique = true, nullable = false)
 	private String login;
-	private String senha;
-	private String nome;
+
+	@Column(unique = true, nullable = false, precision = 11)
 	private String cpf;
+
+	@Column(precision = 20)
+	private String senha;
+
+	@Column(precision = 50)
+	private String nome;
+
 }
