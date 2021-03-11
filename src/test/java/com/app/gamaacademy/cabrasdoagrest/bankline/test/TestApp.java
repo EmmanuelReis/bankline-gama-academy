@@ -123,8 +123,6 @@ public class TestApp {
 		// não está
 		// retornando o objeto atualizado
 
-		// contaOrigem = contaRepository.buscaPorId(contaOrigem.getNumero());
-
 		assertEquals(receita.getContaOrigem().getSaldo(), 100.0);
 
 		despesa.setContaOrigem(contaOrigem);

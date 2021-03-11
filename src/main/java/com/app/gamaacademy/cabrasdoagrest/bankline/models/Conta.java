@@ -19,14 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Conta {
-	/*
-	 * @Id
-	 * 
-	 * @GeneratedValue(strategy = GenerationType.AUTO) private int id;
-	 */
-
+	
 	@Id
-	// @Column(unique = true, nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long numero;
 
