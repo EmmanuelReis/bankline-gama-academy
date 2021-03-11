@@ -9,8 +9,10 @@ public interface UsuarioQuery {
 	public Usuario buscaPorLogin(String login);
 
 	public Usuario buscaPorCpf(String cpf);
-	
+
 	public boolean validaLoginCpfUnicos(int id, String login, String cpf);
+
+	public boolean validaLoginCpfUnicos(String login, String cpf);
 
 	public List<Usuario> buscaPorNome(String nome);
 

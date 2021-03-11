@@ -40,12 +40,13 @@ public class UsuarioServiceImpl implements DefaultService<Usuario> {
 				idUsuario = dao.salvar(usuario);
 
 			// ações adjacentes a criação
-			idConta = contaOperations.criar(idUsuario);
+			// idConta = contaOperations.criar(idUsuario);
 
 		} catch (Exception ex) {
 			// Criou um usuário mas não criou a conta
-			if (!isUpdate && idUsuario >= 0 && idConta <= 0)
-				dao.excluir(idUsuario);
+			/*
+			 * if (!isUpdate && idUsuario >= 0 && idConta <= 0) dao.excluir(idUsuario);
+			 */
 			ex.printStackTrace();
 			throw new Exception(ex.getMessage());
 		}
@@ -97,8 +98,31 @@ public class UsuarioServiceImpl implements DefaultService<Usuario> {
 
 	@Override
 	public Usuario buscaPorId(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.buscaPorId(id);
+	}
+
+	public Usuario buscaPorLogin(String login) {
+		return dao.buscaPorLogin(login);
+	}
+
+	public Usuario buscaPorCpf(String cpf) {
+		return dao.buscaPorCpf(cpf);
+	}
+
+	/**
+	 * Retorna true se o login e cpf informados forem válidos para criar um novo
+	 * usuário. Utilizado na INSERCAO
+	 */
+	public boolean validaLoginCpfUnicos(String login, String cpf) {
+		return dao.validaLoginCpfUnicos(login, cpf);
+	}
+
+	/**
+	 * Retorna true se o login e cpf informados forem válidos para criar um novo
+	 * usuário. Utilizado na ALTERACAO
+	 */
+	public boolean validaLoginCpfUnicos(int id, String login, String cpf) {
+		return dao.validaLoginCpfUnicos(id, login, cpf);
 	}
 
 	@Override

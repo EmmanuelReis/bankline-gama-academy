@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface DefaultService<T> {
 
-	public int salvar(T usuario) throws Exception;
+	public int salvar(T entity) throws Exception;
 
-	public void alterar(int id, T usuario);
+	public void alterar(int id, T entity);
 
 	public void excluir(int id);
 
