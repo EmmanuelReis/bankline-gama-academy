@@ -109,45 +109,42 @@ public class TestApp {
 				.collect(Collectors.toList());
 
 		Conta contaOrigem = listaContas.get(0);
+		Conta contaDestino = listaContas.get(1);
 
 		receita.setContaOrigem(contaOrigem);
 		receita.setPlano(PlanoConta.RECEITA);
 		receita.setValor(100.0);
 
-		int idReceita = transacaoService.salvar(receita);
-		receita = transacaoService.buscaPorId(idReceita);
+		receita = transacaoService.buscaPorId(transacaoService.salvar(receita));
 
 		// Ver se o Gleyson consegue dar uma ajuda pq essa linha abaixo não está
 		// funcionando.
-		// Aparentemente no banco está funcionando, mas a busca do JPA não está
+		// Aparentemente no banco está alterando o saldo da conta, mas a busca do JPA
+		// não está
 		// retornando o objeto atualizado
-		contaOrigem = contaRepository.buscaPorId(contaOrigem.getNumero());
-		assertEquals(contaOrigem.getSaldo(), 100);
+
+		// contaOrigem = contaRepository.buscaPorId(contaOrigem.getNumero());
+
+		assertEquals(receita.getContaOrigem().getSaldo(), 100.0);
+
+		despesa.setContaOrigem(contaOrigem);
+		despesa.setPlano(PlanoConta.DESPESA);
+		despesa.setValor(-25.0);
+
+		despesa = transacaoService.buscaPorId(transacaoService.salvar(despesa));
+
+		assertEquals(despesa.getContaOrigem().getSaldo(), 75.0);
+
+		transferencia.setContaOrigem(contaOrigem);
+		transferencia.setContaDestino(contaDestino);
+		transferencia.setPlano(PlanoConta.TRANSFERENCIA);
+		transferencia.setValor(30.0);
+
+		transferencia = transacaoService.buscaPorId(transacaoService.salvar(transferencia));
+
+		assertEquals(transferencia.getContaOrigem().getSaldo(), 45.0);
+		assertEquals(transferencia.getContaDestino().getSaldo(), 30.0);
 
 	}
-
-	/*
-	 * @Test
-	 * 
-	 * @DisplayName("Testando salvar novo usuário e verificar se o id está sendo retornado"
-	 * ) public void alterarUsuario() throws Exception { Usuario u =
-	 * userRepo.buscaPorLogin("gabriel"); u.setNome("albuquerque gabriel");
-	 * u.setSenha("456");
-	 * 
-	 * userRepo.alterar(u.getId(), u); Usuario q =
-	 * userRepo.buscaPorLogin("gabriel"); assertEquals(q.getNome(),
-	 * "albuquerque gabriel"); assertEquals(q.getSenha(), "456"); }
-	 */
-
-	/*
-	 * @Test
-	 * 
-	 * @DisplayName("Testando salvar novo usuário e verificar se o id está sendo retornado"
-	 * ) public void criarNovoUsuario() { Usuario u = new Usuario();
-	 * u.setCpf("12345678901"); u.setLogin("gabriel");
-	 * u.setNome("gabriel albuquerque"); u.setSenha("123");
-	 * 
-	 * int id = userRepo.salvar(u); assertTrue(id > 0); }
-	 */
 
 }

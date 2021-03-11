@@ -47,7 +47,8 @@ public class App {
 
 		// Ver se o Gleyson consegue dar uma ajuda pq essa linha abaixo não está
 		// funcionando.
-		// Aparentemente no banco está funcionando, mas a busca do JPA não está
+		// Aparentemente no banco está alterando o saldo da conta, mas a busca do JPA
+		// não está
 		// retornando o objeto atualizado
 		long c1Num = c1.getNumero();
 		Conta result = contaRepository.obterTodos().stream().filter(x -> x.getNumero() == c1Num).findFirst().get();
