@@ -13,4 +13,5 @@ public interface DefaultRepository<T> {
 	public T buscaPorId(int id);
 
 	public List<T> obterTodos();
+	
 }

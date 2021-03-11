@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface DefaultService<T> {
 
-	public int salvar(T usuario);
+	public int salvar(T usuario) throws Exception;
 
 	public void alterar(int id, T usuario);
 
