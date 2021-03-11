@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoContaEnum;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 
 public interface ContaServiceView {
 
-	public List<PlanoContaEnum> obterPlanoContas();
+	public List<PlanoConta> obterPlanoContas();
 	
 	public Conta obterContaDeUsuario(int idUsuario);
 

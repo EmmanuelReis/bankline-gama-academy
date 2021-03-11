@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoContaEnum;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
@@ -32,13 +32,13 @@ public class TestApp {
 		c.setId(1);
 		c.setNumero(1101);
 		c.setSaldo(1500.32);
-		c.setUsuario(u);
+		c.setIdUsuario(u.getId());
 
 		Transacao t = new Transacao();
 		t.setData(LocalDate.now());
-		t.setContaOrigem(c);
+		t.setIdContaOrigem(c.getId());
 		t.setId(1);
-		t.setPlano(PlanoContaEnum.RECEITA.toObj());
+		t.setPlano(PlanoConta.RECEITA);
 		t.setValor(200.72);
 
 		System.out.println(t);
