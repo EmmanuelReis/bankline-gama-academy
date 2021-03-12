@@ -1,41 +1,48 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.models;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 public class Transacao {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 	
-	private double valor;
-	private LocalDate data;
-	
-	@Enumerated(EnumType.STRING)
-	private PlanoConta plano;
+	private Double valor;
 
-	@ManyToOne(targetEntity = Conta.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_conta_origem", referencedColumnName = "id")
-	private int idContaOrigem;
+	@OrderBy("data DESC")
+	private LocalDateTime data;
+
+	@Column(name = "plano_conta")
+	private TipoPlanoConta planoConta;
 	
-	@ManyToOne(targetEntity = Conta.class, fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "id_conta_destino", referencedColumnName = "id")
-	private int idContaDestino;
+	@ManyToOne(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "numero_conta_origem", foreignKey = @ForeignKey(name = "fk_transacao_conta_origem"))
+	private Conta contaOrigem;
+	
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "numero_conta_destino", foreignKey = @ForeignKey(name = "fk_transacao_conta_destino"))
+	private Conta contaDestino;
+
+	public Transacao() {
+		this.data = LocalDateTime.now(ZoneOffset.UTC);
+	}
 }
