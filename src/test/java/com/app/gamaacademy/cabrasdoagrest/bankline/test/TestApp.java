@@ -3,13 +3,12 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
@@ -29,16 +28,19 @@ public class TestApp {
 		u.setSenha("123");
 
 		Conta c = new Conta();
-		c.setId(1);
-		c.setNumero(1101);
+		c.setNumero(1101L);
 		c.setSaldo(1500.32);
-		c.setIdUsuario(u.getId());
+		c.setUsuario(u);
+
+		PlanoConta pc = new PlanoConta();
+		pc.setNome("LUZ");
+		pc.setTipo(TipoPlanoConta.RECEITA);
+		pc.setUsuario(u);
 
 		Transacao t = new Transacao();
-		t.setData(LocalDate.now());
-		t.setIdContaOrigem(c.getId());
+		t.setContaOrigem(c);
 		t.setId(1);
-		t.setPlano(PlanoConta.RECEITA);
+		t.setPlanoConta(pc);
 		t.setValor(200.72);
 
 		System.out.println(t);
@@ -56,20 +58,20 @@ public class TestApp {
 		int id = userRepo.salvar(u);
 		assertTrue(id > 0);
 	}
-	
+
 	@Test
 	@DisplayName("Testando salvar novo usuário e verificar se o id está sendo retornado")
 	public void alterarUsuario() throws Exception {
-		Usuario u = userRepo.buscaPorLogin("gabriel");		
+		Usuario u = userRepo.buscaPorLogin("gabriel");
 		u.setNome("albuquerque gabriel");
 		u.setSenha("456");
 
-		userRepo.alterar(u.getId(),u);
+		userRepo.alterar(u.getId(), u);
 		Usuario q = userRepo.buscaPorLogin("gabriel");
 		assertEquals(q.getNome(), "albuquerque gabriel");
 		assertEquals(q.getSenha(), "456");
 	}
-	
+
 	/*
 	 * @Test
 	 * 

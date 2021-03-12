@@ -5,6 +5,7 @@ import java.time.ZoneOffset;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -32,7 +33,8 @@ public class Transacao {
 	private LocalDateTime data;
 
 	@Column(name = "plano_conta")
-	private TipoPlanoConta planoConta;
+	@Embedded
+	private PlanoConta planoConta;
 	
 	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "numero_conta_origem", foreignKey = @ForeignKey(name = "fk_transacao_conta_origem"))
