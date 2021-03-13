@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import javax.persistence.CascadeType;
+<<<<<<< HEAD
 import javax.persistence.Column;
 import javax.persistence.Embedded;
+=======
+>>>>>>> 0e0015ec7fee07581fde06587f9f8f7ce53756f4
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -32,8 +35,8 @@ public class Transacao {
 	@OrderBy("data DESC")
 	private LocalDateTime data;
 
-	@Column(name = "plano_conta")
-	@Embedded
+	@ManyToOne(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "plano_conta_id", foreignKey = @ForeignKey(name = "fk_transacao_plano_conta"))
 	private PlanoConta planoConta;
 	
 	@ManyToOne(cascade = CascadeType.MERGE)
