@@ -11,6 +11,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
@@ -25,11 +26,8 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioServiceImpl;
 @TestMethodOrder(OrderAnnotation.class)
 public class TestApp {
 
-	private UsuarioServiceImpl usuarioService = new UsuarioServiceImpl();
-	DefaultService<Transacao> transacaoService = new TransacaoServiceImpl();
-	ContaRepository contaRepository = new ContaRepository();
-
-	private UsuarioBuilder ub = new UsuarioBuilder();
+	@Autowired
+	private UsuarioRepository userRepo; // = new UsuarioRepository();
 
 	@Test
 	@Order(1)
@@ -75,30 +73,22 @@ public class TestApp {
 
 		} while (!isValid);
 
-		u = usuarioService.buscaPorId(usuarioService.salvar(u));
-		System.out
-				.println(String.format("Usuario. login: %s ; cpf: %s ; id: %s .", u.getLogin(), u.getCpf(), u.getId()));
-		assertTrue(u.getId() > 0);
+		Usuario saveUser = userRepo.save(u);
+		assertTrue(saveUser.getId() > 0);
 	}
 
 	@Test
 	@Order(3)
 	@DisplayName("Testando salvar novo usuário e verificar se o id está sendo retornado")
-	public void criarNovoUsuarioDestino() throws Exception {
-		boolean isValid = false;
-		Usuario u = null;
-		do {
-			u = ub.loginRandom(Usuario.LOGIN_MAX_LENGTH).cpfRandom(Usuario.CPF_MAX_LENGTH)
-					.nomeRandom(Usuario.NOME_MAX_LENGTH).senhaRandom(Usuario.SENHA_MAX_LENGTH).build();
+	public void alterarUsuario() throws Exception {
+		Usuario u = userRepo.findByLoginEquals("gabriel");
+		u.setNome("albuquerque gabriel");
+		u.setSenha("456");
 
-			isValid = usuarioService.validaLoginCpfUnicos(u.getLogin(), u.getCpf());
-
-		} while (!isValid);
-
-		u = usuarioService.buscaPorId(usuarioService.salvar(u));
-		System.out
-				.println(String.format("Usuario. login: %s ; cpf: %s ; id: %s .", u.getLogin(), u.getCpf(), u.getId()));
-		assertTrue(u.getId() > 0);
+		userRepo.save(u);
+		Usuario q = userRepo.findByLoginEquals("gabriel");
+		assertEquals(q.getNome(), "albuquerque gabriel");
+		assertEquals(q.getSenha(), "456");
 	}
 
 	@Test

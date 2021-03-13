@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,6 +37,7 @@ public class Usuario {
 	@Column(precision = NOME_MAX_LENGTH)
 	private String nome;
 
-	@OneToOne(mappedBy = "usuario")
-	private Conta conta;
+	/*
+	 * @OneToOne(mappedBy = "usuario") private Conta conta;
+	 */
 }

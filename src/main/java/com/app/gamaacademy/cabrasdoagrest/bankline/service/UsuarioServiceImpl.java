@@ -2,22 +2,24 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioDAO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioDAOImpl;
 
 public class UsuarioServiceImpl implements DefaultService<Usuario> {
 
-	private static final int MAX_LENGTH_LOGIN = 20;
+	@Autowired
+	private DefaultRepository<Usuario> repository;
 
-	private UsuarioDAO dao;
-
+	@Autowired
 	private ContaServiceOperations contaOperations;
 
-	public UsuarioServiceImpl() {
-		dao = new UsuarioDAOImpl();
-		contaOperations = new ContaServiceOperationsImpl();
-	}
+	/*
+	 * public UsuarioServiceImpl() { repository = new UsuarioRepository();
+	 * contaOperations = new ContaServiceOperationsImpl(); }
+	 */
 
 	@Override
 	public int salvar(Usuario usuario) throws Exception {
