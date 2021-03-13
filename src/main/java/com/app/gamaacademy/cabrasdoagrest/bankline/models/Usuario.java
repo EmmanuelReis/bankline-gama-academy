@@ -1,11 +1,15 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+
+import com.app.gamaacademy.cabrasdoagrest.bankline.listeners.UsuarioListener;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(UsuarioListener.class)
 public class Usuario {
 
 	public final static int LOGIN_MAX_LENGTH = 20;
@@ -24,7 +29,7 @@ public class Usuario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	@Column(unique = true, nullable = false, precision = LOGIN_MAX_LENGTH)
 	private String login;
@@ -38,7 +43,6 @@ public class Usuario {
 	@Column(precision = NOME_MAX_LENGTH)
 	private String nome;
 
-	@OneToOne(mappedBy = "usuario")
+	@OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
 	private Conta conta;
-
 }
