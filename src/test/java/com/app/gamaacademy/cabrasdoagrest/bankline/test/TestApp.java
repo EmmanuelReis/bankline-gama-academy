@@ -19,7 +19,7 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
-import com.app.gamaacademy.cabrasdoagrest.bankline.service.DefaultService;
+import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.TransacaoServiceImpl;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioServiceImpl;
 
@@ -27,7 +27,19 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioServiceImpl;
 public class TestApp {
 
 	@Autowired
-	private UsuarioRepository userRepo; // = new UsuarioRepository();
+	private UsuarioRepository userRepo;
+
+	@Autowired
+	private ContaRepository contaRepository = new ContaRepository();
+
+	@Autowired
+	private TransacaoServiceImpl transacaoService = new TransacaoServiceImpl();
+
+	@Autowired
+	private UsuarioBuilder ub = new UsuarioBuilder();
+
+	@Autowired
+	private UsuarioServiceImpl usuarioService = new UsuarioServiceImpl();
 
 	@Test
 	@Order(1)

@@ -5,8 +5,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
+import org.springframework.stereotype.Repository;
+
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 
+@Repository
 public class ContaRepository implements DefaultRepository<Conta, Long> {
 
 	protected static EntityManager em = Persistence.createEntityManagerFactory("PU_BANKLINE").createEntityManager();

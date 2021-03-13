@@ -2,11 +2,14 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.TransacaoRepository;
 
+@Service
 public class TransacaoServiceImpl implements DefaultService<Transacao> {
 
 	protected TransacaoRepository transRepo = new TransacaoRepository();
@@ -40,8 +43,8 @@ public class TransacaoServiceImpl implements DefaultService<Transacao> {
 		if (entity.getPlanoConta() == null)
 			throw new Exception("Plano de Conta inexiste ou inválido.");
 
-		if ((entity.getPlanoConta().getTipo().equals(TipoPlanoConta.TRANSFERENCIA) || entity.getPlanoConta().getTipo().equals(TipoPlanoConta.RECEITA))
-				&& entity.getValor() <= 0)
+		if ((entity.getPlanoConta().getTipo().equals(TipoPlanoConta.TRANSFERENCIA)
+				|| entity.getPlanoConta().getTipo().equals(TipoPlanoConta.RECEITA)) && entity.getValor() <= 0)
 			throw new Exception("Transações do plano de conta RECEITA ou TRANSFERENCIA precisam ter valor maior que 0");
 
 		if (entity.getPlanoConta().getTipo().equals(TipoPlanoConta.DESPESA) && entity.getValor() >= 0)

@@ -1,10 +1,12 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.test;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.stereotype.Component;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 
+@Component
 public class UsuarioBuilder {
 
 	private int id;
