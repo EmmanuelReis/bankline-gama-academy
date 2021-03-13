@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
@@ -16,7 +17,7 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioServiceImpl;
 public class App {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Hello World!");
-		Stream.of(PlanoConta.values()).forEach(p -> System.out.println(p));
+		Stream.of(TipoPlanoConta.values()).forEach(p -> System.out.println(p));
 
 		DefaultService<Usuario> userRepo = new UsuarioServiceImpl();
 
@@ -24,23 +25,28 @@ public class App {
 		DefaultService<Transacao> tService = new TransacaoServiceImpl();
 		ContaRepository contaRepository = new ContaRepository();
 
-		/*
-		 * Usuario u = new Usuario(); u.setCpf("12345678985"); u.setLogin("gabriel");
-		 * u.setNome("gabriel"); u.setSenha("123");
-		 * 
-		 * int id = userRepo.salvar(u); System.out.println(id);
-		 */
+		
+		Usuario u = new Usuario(); u.setCpf("12345678985"); u.setLogin("gabriel");
+		u.setNome("gabriel"); u.setSenha("123");
+		 
+		int id = userRepo.salvar(u); System.out.println(id);
+		 
 
 		List<Conta> lt = contaRepository.obterTodos();
 		Conta c1 = lt.get(0);
 		Conta c2 = lt.get(1);
 		lt = null;
 
+		PlanoConta pc = new PlanoConta();
+
+		pc.setNome("Luz");
+		pc.setTipo(TipoPlanoConta.RECEITA);
+		pc.setUsuario(u);
+
 		Transacao t = new Transacao();
 
 		t.setContaOrigem(c1);
-		t.setData(LocalDate.now());
-		t.setPlano(PlanoConta.RECEITA);
+		t.setPlanoConta(pc);
 		t.setValor(100.25);
 
 		tService.salvar(t);
@@ -56,22 +62,32 @@ public class App {
 		c1 = result;
 		// c1 = contaRepository.buscaPorId(c1.getNumero());
 
+		PlanoConta pcd = new PlanoConta();
+
+		pcd.setNome("Luz");
+		pcd.setTipo(TipoPlanoConta.DESPESA);
+		pcd.setUsuario(u);
+
 		Transacao t1 = new Transacao();
 
 		t1.setContaOrigem(c1);
-		t1.setData(LocalDate.now());
-		t1.setPlano(PlanoConta.DESPESA);
+		t1.setPlanoConta(pcd);
 		t1.setValor(-50.10);
 
 		tService.salvar(t1);
+
+		PlanoConta pct = new PlanoConta();
+
+		pct.setNome("Luz");
+		pct.setTipo(TipoPlanoConta.TRANSFERENCIA);
+		pct.setUsuario(u);
 
 		Transacao t2 = new Transacao();
 
 		t2.setContaOrigem(c1);
 		t2.setContaDestino(c2);
-		t2.setData(LocalDate.now());
-		t2.setPlano(PlanoConta.TRANSFERENCIA);
-		t2.setValor(20);
+		t2.setPlanoConta(pct);
+		t2.setValor(20.0);
 
 		tService.salvar(t2);
 

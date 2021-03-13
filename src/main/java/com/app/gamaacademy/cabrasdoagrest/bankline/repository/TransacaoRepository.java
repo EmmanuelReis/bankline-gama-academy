@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 
 public class TransacaoRepository implements DefaultRepository<Transacao, Integer> {
@@ -20,7 +20,7 @@ public class TransacaoRepository implements DefaultRepository<Transacao, Integer
 		transacao.setContaOrigem(em.find(Conta.class, transacao.getContaOrigem().getNumero()));
 
 		double valor = transacao.getValor();
-		if (!transacao.getPlano().equals(PlanoConta.TRANSFERENCIA)) {
+		if (!transacao.getPlanoConta().getTipo().equals(TipoPlanoConta.TRANSFERENCIA)) {
 			transacao.getContaOrigem().setSaldo(valor);
 		} else {
 			transacao.setContaDestino(em.find(Conta.class, transacao.getContaDestino().getNumero()));

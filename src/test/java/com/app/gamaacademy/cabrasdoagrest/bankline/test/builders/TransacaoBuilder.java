@@ -14,6 +14,12 @@ public class TransacaoBuilder {
     private Conta contaOrigem = null;
     private Conta contaDestino = null;
 
+    public TransacaoBuilder comPlano(PlanoConta planoConta) {
+        this.planoConta = planoConta;
+        
+        return this;
+    }
+
     public TransacaoBuilder comAsContas(Conta contaOrigem, Conta contaDestino) {
         this.contaOrigem = contaOrigem;
         this.contaDestino = contaDestino;

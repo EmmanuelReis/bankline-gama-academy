@@ -4,11 +4,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import javax.persistence.CascadeType;
-<<<<<<< HEAD
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
-=======
->>>>>>> 0e0015ec7fee07581fde06587f9f8f7ce53756f4
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;

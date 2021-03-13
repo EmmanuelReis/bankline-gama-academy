@@ -2,7 +2,7 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
 import java.util.List;
 
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.TransacaoRepository;
@@ -37,17 +37,17 @@ public class TransacaoServiceImpl implements DefaultService<Transacao> {
 		if (contaRepo.buscaPorId(entity.getContaOrigem().getNumero()) == null)
 			throw new Exception("Conta origem informada não existe");
 
-		if (entity.getPlano() == null)
+		if (entity.getPlanoConta() == null)
 			throw new Exception("Plano de Conta inexiste ou inválido.");
 
-		if ((entity.getPlano().equals(PlanoConta.TRANSFERENCIA) || entity.getPlano().equals(PlanoConta.RECEITA))
+		if ((entity.getPlanoConta().getTipo().equals(TipoPlanoConta.TRANSFERENCIA) || entity.getPlanoConta().getTipo().equals(TipoPlanoConta.RECEITA))
 				&& entity.getValor() <= 0)
 			throw new Exception("Transações do plano de conta RECEITA ou TRANSFERENCIA precisam ter valor maior que 0");
 
-		if (entity.getPlano().equals(PlanoConta.DESPESA) && entity.getValor() >= 0)
+		if (entity.getPlanoConta().getTipo().equals(TipoPlanoConta.DESPESA) && entity.getValor() >= 0)
 			throw new Exception("Transações do plano de conta DESPESA precisam ter valor menor que 0");
 
-		if (entity.getPlano().equals(PlanoConta.TRANSFERENCIA)) {
+		if (entity.getPlanoConta().getTipo().equals(TipoPlanoConta.TRANSFERENCIA)) {
 			if (entity.getContaDestino() == null || entity.getContaDestino().getNumero() <= 0)
 				throw new Exception(
 						"Para transação de TRANSFERENCIA. Conta destino não pode ser nula ou sem informar numero.");

@@ -3,6 +3,9 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -112,8 +115,14 @@ public class TestApp {
 		Conta contaOrigem = listaContas.get(0);
 		Conta contaDestino = listaContas.get(1);
 
+		PlanoConta pc = new PlanoConta();
+
+		pc.setNome("Luz");
+		pc.setTipo(TipoPlanoConta.RECEITA);
+		pc.setUsuario(contaOrigem.getUsuario());
+
 		receita.setContaOrigem(contaOrigem);
-		receita.setPlano(PlanoConta.RECEITA);
+		receita.setPlanoConta(pc);
 		receita.setValor(100.0);
 
 		receita = transacaoService.buscaPorId(transacaoService.salvar(receita));
@@ -126,17 +135,29 @@ public class TestApp {
 
 		assertEquals(receita.getContaOrigem().getSaldo(), 100.0);
 
+		PlanoConta pcd = new PlanoConta();
+
+		pcd.setNome("Luz");
+		pcd.setTipo(TipoPlanoConta.DESPESA);
+		pcd.setUsuario(contaOrigem.getUsuario());
+
 		despesa.setContaOrigem(contaOrigem);
-		despesa.setPlano(PlanoConta.DESPESA);
+		despesa.setPlanoConta(pcd);
 		despesa.setValor(-25.0);
 
 		despesa = transacaoService.buscaPorId(transacaoService.salvar(despesa));
+
+		PlanoConta pct = new PlanoConta();
+
+		pct.setNome("Luz");
+		pct.setTipo(TipoPlanoConta.TRANSFERENCIA);
+		pct.setUsuario(contaOrigem.getUsuario());
 
 		assertEquals(despesa.getContaOrigem().getSaldo(), 75.0);
 
 		transferencia.setContaOrigem(contaOrigem);
 		transferencia.setContaDestino(contaDestino);
-		transferencia.setPlano(PlanoConta.TRANSFERENCIA);
+		transferencia.setPlanoConta(pct);
 		transferencia.setValor(30.0);
 
 		transferencia = transacaoService.buscaPorId(transacaoService.salvar(transferencia));
