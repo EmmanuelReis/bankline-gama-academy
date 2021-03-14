@@ -1,6 +1,5 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.repository;
 
-// import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,5 +9,7 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 public interface UsuarioRepository extends CrudRepository<Usuario, Integer> {
 
 	public Usuario findByLoginEquals(String login);
-	
+
+	public Usuario findByLoginOrCpfEquals(String login, String cpf);
+
 }

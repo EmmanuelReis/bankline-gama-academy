@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
@@ -23,6 +24,7 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.TransacaoServiceImpl;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioServiceImpl;
 
+@SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 public class TestApp {
 
@@ -30,16 +32,16 @@ public class TestApp {
 	private UsuarioRepository userRepo;
 
 	@Autowired
-	private ContaRepository contaRepository = new ContaRepository();
+	private ContaRepository contaRepository;
 
 	@Autowired
-	private TransacaoServiceImpl transacaoService = new TransacaoServiceImpl();
+	private TransacaoServiceImpl transacaoService;
 
 	@Autowired
-	private UsuarioBuilder ub = new UsuarioBuilder();
+	private UsuarioBuilder ub;
 
 	@Autowired
-	private UsuarioServiceImpl usuarioService = new UsuarioServiceImpl();
+	private UsuarioServiceImpl usuarioService;
 
 	@Test
 	@Order(1)
@@ -111,7 +113,7 @@ public class TestApp {
 		Transacao receita = new Transacao();
 		Transacao despesa = new Transacao();
 		Transacao transferencia = new Transacao();
-		List<Conta> listaContas = contaRepository.obterTodos().stream().filter(c -> c.getSaldo() == (double) 0).limit(2)
+		List<Conta> listaContas = contaRepository.findAll().stream().filter(c -> c.getSaldo() == (double) 0).limit(2)
 				.collect(Collectors.toList());
 
 		Conta contaOrigem = listaContas.get(0);
@@ -126,14 +128,7 @@ public class TestApp {
 		receita.setContaOrigem(contaOrigem);
 		receita.setPlanoConta(pc);
 		receita.setValor(100.0);
-
-		receita = transacaoService.buscaPorId(transacaoService.salvar(receita));
-
-		// Ver se o Gleyson consegue dar uma ajuda pq essa linha abaixo não está
-		// funcionando.
-		// Aparentemente no banco está alterando o saldo da conta, mas a busca do JPA
-		// não está
-		// retornando o objeto atualizado
+		receita = transacaoService.obter(transacaoService.salvar(receita));
 
 		assertEquals(receita.getContaOrigem().getSaldo(), 100.0);
 
@@ -147,7 +142,7 @@ public class TestApp {
 		despesa.setPlanoConta(pcd);
 		despesa.setValor(-25.0);
 
-		despesa = transacaoService.buscaPorId(transacaoService.salvar(despesa));
+		despesa = transacaoService.obter(transacaoService.salvar(despesa));
 
 		PlanoConta pct = new PlanoConta();
 
@@ -162,7 +157,7 @@ public class TestApp {
 		transferencia.setPlanoConta(pct);
 		transferencia.setValor(30.0);
 
-		transferencia = transacaoService.buscaPorId(transacaoService.salvar(transferencia));
+		transferencia = transacaoService.obter(transacaoService.salvar(transferencia));
 
 		assertEquals(transferencia.getContaOrigem().getSaldo(), 45.0);
 		assertEquals(transferencia.getContaDestino().getSaldo(), 30.0);

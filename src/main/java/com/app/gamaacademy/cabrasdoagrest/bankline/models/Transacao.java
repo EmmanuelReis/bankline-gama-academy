@@ -4,11 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import javax.persistence.CascadeType;
-
-import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,7 +23,7 @@ public class Transacao {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	private Double valor;
 
 	@OrderBy("data DESC")
@@ -36,12 +32,12 @@ public class Transacao {
 	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "plano_conta_id", foreignKey = @ForeignKey(name = "fk_transacao_plano_conta"))
 	private PlanoConta planoConta;
-	
+
 	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "numero_conta_origem", foreignKey = @ForeignKey(name = "fk_transacao_conta_origem"))
 	private Conta contaOrigem;
-	
-	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+
+	@ManyToOne(optional = true)
 	@JoinColumn(name = "numero_conta_destino", foreignKey = @ForeignKey(name = "fk_transacao_conta_destino"))
 	private Conta contaDestino;
 

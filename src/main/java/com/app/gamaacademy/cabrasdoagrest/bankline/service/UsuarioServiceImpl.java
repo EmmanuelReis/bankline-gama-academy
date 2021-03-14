@@ -1,8 +1,11 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
 
@@ -19,7 +22,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public void atualizarUsuario(Usuario usuario) {
-		if(usuario.getId() == null)
+		if (usuario.getId() == null)
 			return;
 
 		repository.save(usuario);
@@ -32,7 +35,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Usuario encontrarUsuario(Integer id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
+	}
+
+	@Override
+	public List<PlanoConta> obterPlanoContas(Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean validaLoginCpfUnicos(String login, String cpf) {
+		return repository.findByLoginOrCpfEquals(login, cpf) == null;
 	}
 
 }
