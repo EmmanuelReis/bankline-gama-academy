@@ -7,8 +7,13 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 public interface UsuarioService {
-    public abstract Integer criarUsuario(Usuario usuario) throws InvalidDataAccessApiUsageException, DataIntegrityViolationException, DataRetrievalFailureException;
-    public abstract void atualizarUsuario(Usuario usuario) throws InvalidDataAccessApiUsageException, DataIntegrityViolationException, DataRetrievalFailureException;
-    public abstract void deletarUsuario(Integer id);
-    public abstract Usuario encontrarUsuario(Integer id);
+	public Integer criarUsuario(Usuario usuario)
+			throws InvalidDataAccessApiUsageException, DataIntegrityViolationException, DataRetrievalFailureException;
+
+	public void atualizarUsuario(Usuario usuario)
+			throws InvalidDataAccessApiUsageException, DataIntegrityViolationException, DataRetrievalFailureException;
+
+	public void deletarUsuario(Integer id);
+
+	public Usuario encontrarUsuario(Integer id);
 }
