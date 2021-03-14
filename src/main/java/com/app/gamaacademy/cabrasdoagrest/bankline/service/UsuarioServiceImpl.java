@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
@@ -17,7 +18,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Integer criarUsuario(Usuario usuario) {
-		return repository.save(usuario).getId();
+		Integer id = 0;
+
+		try {
+			Conta novaConta = new Conta();
+			usuario.setConta(novaConta);
+			novaConta.setUsuario(usuario);
+			id = repository.save(usuario).getId();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return id;
 	}
 
 	@Override

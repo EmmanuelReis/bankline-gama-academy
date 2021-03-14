@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.listeners.UsuarioListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,6 +44,7 @@ public class Usuario {
 	@Column(precision = NOME_MAX_LENGTH)
 	private String nome;
 
+	@JsonIgnore
 	@OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
 	private Conta conta;
 }
