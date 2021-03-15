@@ -11,6 +11,8 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
@@ -18,18 +20,28 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
-import com.app.gamaacademy.cabrasdoagrest.bankline.service.DefaultService;
+import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.TransacaoServiceImpl;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioServiceImpl;
 
+@SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 public class TestApp {
 
-	private UsuarioServiceImpl usuarioService = new UsuarioServiceImpl();
-	DefaultService<Transacao> transacaoService = new TransacaoServiceImpl();
-	ContaRepository contaRepository = new ContaRepository();
+	@Autowired
+	private UsuarioRepository userRepo;
 
-	private UsuarioBuilder ub = new UsuarioBuilder();
+	@Autowired
+	private ContaRepository contaRepository;
+
+	@Autowired
+	private TransacaoServiceImpl transacaoService;
+
+	@Autowired
+	private UsuarioBuilder ub;
+
+	@Autowired
+	private UsuarioServiceImpl usuarioService;
 
 	@Test
 	@Order(1)
@@ -75,30 +87,22 @@ public class TestApp {
 
 		} while (!isValid);
 
-		u = usuarioService.buscaPorId(usuarioService.salvar(u));
-		System.out
-				.println(String.format("Usuario. login: %s ; cpf: %s ; id: %s .", u.getLogin(), u.getCpf(), u.getId()));
-		assertTrue(u.getId() > 0);
+		Usuario saveUser = userRepo.save(u);
+		assertTrue(saveUser.getId() > 0);
 	}
 
 	@Test
 	@Order(3)
 	@DisplayName("Testando salvar novo usuário e verificar se o id está sendo retornado")
-	public void criarNovoUsuarioDestino() throws Exception {
-		boolean isValid = false;
-		Usuario u = null;
-		do {
-			u = ub.loginRandom(Usuario.LOGIN_MAX_LENGTH).cpfRandom(Usuario.CPF_MAX_LENGTH)
-					.nomeRandom(Usuario.NOME_MAX_LENGTH).senhaRandom(Usuario.SENHA_MAX_LENGTH).build();
+	public void alterarUsuario() throws Exception {
+		Usuario u = userRepo.findByLoginEquals("gabriel");
+		u.setNome("albuquerque gabriel");
+		u.setSenha("456");
 
-			isValid = usuarioService.validaLoginCpfUnicos(u.getLogin(), u.getCpf());
-
-		} while (!isValid);
-
-		u = usuarioService.buscaPorId(usuarioService.salvar(u));
-		System.out
-				.println(String.format("Usuario. login: %s ; cpf: %s ; id: %s .", u.getLogin(), u.getCpf(), u.getId()));
-		assertTrue(u.getId() > 0);
+		userRepo.save(u);
+		Usuario q = userRepo.findByLoginEquals("gabriel");
+		assertEquals(q.getNome(), "albuquerque gabriel");
+		assertEquals(q.getSenha(), "456");
 	}
 
 	@Test
@@ -109,7 +113,7 @@ public class TestApp {
 		Transacao receita = new Transacao();
 		Transacao despesa = new Transacao();
 		Transacao transferencia = new Transacao();
-		List<Conta> listaContas = contaRepository.obterTodos().stream().filter(c -> c.getSaldo() == (double) 0).limit(2)
+		List<Conta> listaContas = contaRepository.findAll().stream().filter(c -> c.getSaldo() == (double) 0).limit(2)
 				.collect(Collectors.toList());
 
 		Conta contaOrigem = listaContas.get(0);
@@ -124,14 +128,7 @@ public class TestApp {
 		receita.setContaOrigem(contaOrigem);
 		receita.setPlanoConta(pc);
 		receita.setValor(100.0);
-
-		receita = transacaoService.buscaPorId(transacaoService.salvar(receita));
-
-		// Ver se o Gleyson consegue dar uma ajuda pq essa linha abaixo não está
-		// funcionando.
-		// Aparentemente no banco está alterando o saldo da conta, mas a busca do JPA
-		// não está
-		// retornando o objeto atualizado
+		receita = transacaoService.obter(transacaoService.salvar(receita));
 
 		assertEquals(receita.getContaOrigem().getSaldo(), 100.0);
 
@@ -145,7 +142,7 @@ public class TestApp {
 		despesa.setPlanoConta(pcd);
 		despesa.setValor(-25.0);
 
-		despesa = transacaoService.buscaPorId(transacaoService.salvar(despesa));
+		despesa = transacaoService.obter(transacaoService.salvar(despesa));
 
 		PlanoConta pct = new PlanoConta();
 
@@ -160,7 +157,7 @@ public class TestApp {
 		transferencia.setPlanoConta(pct);
 		transferencia.setValor(30.0);
 
-		transferencia = transacaoService.buscaPorId(transacaoService.salvar(transferencia));
+		transferencia = transacaoService.obter(transacaoService.salvar(transferencia));
 
 		assertEquals(transferencia.getContaOrigem().getSaldo(), 45.0);
 		assertEquals(transferencia.getContaDestino().getSaldo(), 30.0);

@@ -4,14 +4,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 
-public interface ContaServiceView {
+public interface ContaService {
 
-	public List<PlanoConta> obterPlanoContas();
-	
-	public Conta obterContaDeUsuario(int idUsuario);
+	public Long salvar(Conta conta);
+
+	public Conta obter(Long numero);
+
+	public Conta obterContaDeUsuario(Integer idUsuario);
 
 	public List<Transacao> extrato();
 

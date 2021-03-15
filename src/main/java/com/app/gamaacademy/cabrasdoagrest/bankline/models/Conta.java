@@ -24,7 +24,7 @@ public class Conta {
 	private Long numero;
 
 	@Column(precision = 2)
-	private Double saldo;
+	private Double saldo = 0.0;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_usuario", foreignKey = @ForeignKey(name = "fk_conta_usuario"))
