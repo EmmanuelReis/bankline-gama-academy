@@ -18,14 +18,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 public class PlanoConta {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id = 0;
 
-    private String nome;
-    private TipoPlanoConta tipo;
+	private String nome;
+	private TipoOperacao tipo;
 
-    @OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_usuario", foreignKey = @ForeignKey(name = "fk_plano_usuario"))
 	private Usuario usuario;
 }

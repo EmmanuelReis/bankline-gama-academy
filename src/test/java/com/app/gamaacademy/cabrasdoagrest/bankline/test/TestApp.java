@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
@@ -61,7 +61,7 @@ public class TestApp {
 
 		PlanoConta pc = new PlanoConta();
 		pc.setNome("LUZ");
-		pc.setTipo(TipoPlanoConta.RECEITA);
+		pc.setTipo(TipoOperacao.RECEITA);
 		pc.setUsuario(u);
 
 		Transacao t = new Transacao();
@@ -122,7 +122,7 @@ public class TestApp {
 		PlanoConta pc = new PlanoConta();
 
 		pc.setNome("Luz");
-		pc.setTipo(TipoPlanoConta.RECEITA);
+		pc.setTipo(TipoOperacao.RECEITA);
 		pc.setUsuario(contaOrigem.getUsuario());
 
 		receita.setContaOrigem(contaOrigem);
@@ -135,7 +135,7 @@ public class TestApp {
 		PlanoConta pcd = new PlanoConta();
 
 		pcd.setNome("Luz");
-		pcd.setTipo(TipoPlanoConta.DESPESA);
+		pcd.setTipo(TipoOperacao.DESPESA);
 		pcd.setUsuario(contaOrigem.getUsuario());
 
 		despesa.setContaOrigem(contaOrigem);
@@ -147,7 +147,7 @@ public class TestApp {
 		PlanoConta pct = new PlanoConta();
 
 		pct.setNome("Luz");
-		pct.setTipo(TipoPlanoConta.TRANSFERENCIA);
+		pct.setTipo(TipoOperacao.TRANSFERENCIA);
 		pct.setUsuario(contaOrigem.getUsuario());
 
 		assertEquals(despesa.getContaOrigem().getSaldo(), 75.0);

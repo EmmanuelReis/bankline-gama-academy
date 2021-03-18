@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.TransacaoRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.test.builders.ContaBuilder;
 import com.app.gamaacademy.cabrasdoagrest.bankline.test.builders.PlanoContaBuilder;
@@ -21,7 +21,7 @@ public class TransacaoRepositoryTest {
 	@Test
 	@DisplayName("Testando criação e interação das classes do modelo")
 	public void testaEstruturaModelo() {
-		PlanoConta planoConta = new PlanoContaBuilder().comNome("Luz").comTipo(TipoPlanoConta.RECEITA)
+		PlanoConta planoConta = new PlanoContaBuilder().comNome("Luz").comTipo(TipoOperacao.RECEITA)
 				.build(Um.usuario.build());
 
 		System.out.println(Uma.transacao.comPlano(planoConta));

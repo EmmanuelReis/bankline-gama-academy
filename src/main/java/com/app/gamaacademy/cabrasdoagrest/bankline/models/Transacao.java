@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -24,6 +25,7 @@ public class Transacao {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@Column(precision = 2)
 	private Double valor;
 
 	@OrderBy("data DESC")
@@ -43,5 +45,7 @@ public class Transacao {
 
 	public Transacao() {
 		this.data = LocalDateTime.now(ZoneOffset.UTC);
+		this.id = 0;
+		this.valor = 0.0;
 	}
 }

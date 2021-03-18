@@ -22,5 +22,5 @@ public interface UsuarioService {
 	
 	public boolean validaLoginCpfUnicos(String login, String cpf);
 
-	public List<PlanoConta> obterPlanoContas(Integer id);
+	public List<PlanoConta> obterPlanoContas(int id);
 }

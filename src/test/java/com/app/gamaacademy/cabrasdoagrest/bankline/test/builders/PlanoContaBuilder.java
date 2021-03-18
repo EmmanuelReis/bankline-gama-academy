@@ -1,13 +1,13 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.test.builders;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 
 public class PlanoContaBuilder {
     private Integer id;
     private String nome;
-    private TipoPlanoConta tipo;
+    private TipoOperacao tipo;
 
     public PlanoContaBuilder comNome(String nome) {
         this.nome = nome;
@@ -15,7 +15,7 @@ public class PlanoContaBuilder {
         return this;
     }
 
-    public PlanoContaBuilder comTipo(TipoPlanoConta tipo) {
+    public PlanoContaBuilder comTipo(TipoOperacao tipo) {
         this.tipo = tipo;
 
         return this;
