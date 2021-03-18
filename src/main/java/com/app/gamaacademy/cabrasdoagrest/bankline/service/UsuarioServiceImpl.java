@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
+import com.app.gamaacademy.cabrasdoagrest.bankline.repository.PlanoContaRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
 
 @Service
@@ -15,6 +16,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Autowired
 	private UsuarioRepository repository;
+
+	@Autowired
+	private PlanoContaRepository pcRepository;
 
 	@Override
 	public Integer criarUsuario(Usuario usuario) {
@@ -51,9 +55,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public List<PlanoConta> obterPlanoContas(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PlanoConta> obterPlanoContas(int id) {
+		return pcRepository.obterPlanoContasUsuario((int) id);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoPlanoConta;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
