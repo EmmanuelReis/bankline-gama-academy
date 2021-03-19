@@ -24,19 +24,14 @@ public class UsuarioController {
 
 	@PostMapping
 	public ResponseEntity<Void> criar(@RequestBody Usuario usuario) {
-
 		Integer id = service.criarUsuario(usuario);
-
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
-
 		return ResponseEntity.created(uri).build();
-
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Usuario> obter(@PathVariable(value = "id") Integer id) {
 		Usuario ret = service.encontrarUsuario(id);
-
 		return ResponseEntity.ok().body(ret);
 	}
 
