@@ -48,4 +48,16 @@ public class Transacao {
 		this.id = 0;
 		this.valor = 0.0;
 	}
+
+	public Double getValor() {
+		Integer multiplicador = 1;
+		if (this.planoConta != null && this.planoConta.getTipo() != null)
+			multiplicador = this.planoConta.getTipo().getMultiplicador();
+		return this.valor * multiplicador;
+	}
+
+	public void setValor(Double valor) {
+		this.valor = Math.abs(valor);
+	}
+
 }

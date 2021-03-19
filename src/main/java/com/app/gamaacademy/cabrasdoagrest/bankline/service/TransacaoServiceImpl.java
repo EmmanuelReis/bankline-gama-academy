@@ -46,13 +46,10 @@ public class TransacaoServiceImpl implements TransacaoService {
 		entity.setPlanoConta(
 				preencherPC(idUsuario, idPC, entity.getPlanoConta().getNome(), entity.getPlanoConta().getTipo()));
 
-		double valor = entity.getValor() * entity.getPlanoConta().getTipo().getMultiplicador();
-		if (!entity.getPlanoConta().getTipo().equals(TipoOperacao.TRANSFERENCIA)) {
-			entity.getContaOrigem().setSaldo(valor);
-		} else {
+		entity.getContaOrigem().setSaldo(entity.getValor());
+
+		if (entity.getPlanoConta().getTipo().equals(TipoOperacao.TRANSFERENCIA)) {
 			entity.setContaDestino(contaRepo.findById(entity.getContaDestino().getNumero()).get());
-			entity.getContaOrigem().setSaldo(valor);
-			entity.getContaDestino().setSaldo(valor * -1);
 
 			/* Criando Transação de Receita na conta destino, para fins de extrato */
 			PlanoConta pc = new PlanoConta();
@@ -61,9 +58,11 @@ public class TransacaoServiceImpl implements TransacaoService {
 
 			transDest = new Transacao();
 			transDest.setContaOrigem(entity.getContaDestino());
-			transDest.setValor(entity.getValor());
 			transDest.setPlanoConta(pc);
+			transDest.setValor(entity.getValor());
 			transDest.setData(entity.getData());
+
+			entity.getContaDestino().setSaldo(transDest.getValor());
 		}
 
 		try {
@@ -89,18 +88,15 @@ public class TransacaoServiceImpl implements TransacaoService {
 		if (contaOrigem == null)
 			throw new Exception("Conta origem informada não existe");
 
-		if (entity.getValor() <= 0)
-			throw new Exception("Valor precisa ser maior que zero");
+		if (entity.getValor() == 0)
+			throw new Exception("Valor precisa ser diferente de zero");
 
 		Usuario usuario = contaOrigem.getUsuario();
 		PlanoConta plano = entity.getPlanoConta();
 		if (plano == null)
 			throw new Exception("Plano de conta dever ser informado.");
-//		else if (!Stream.of(TipoOperacao.values()).anyMatch(p -> p.getCodigo().equals(plano.getTipo().getCodigo())))
 		else if (plano.getTipo() == null || plano.getTipo().getCodigo() == null)
 			throw new Exception("Valor do Tipo de Operação não é válido.");
-		else if (plano.getId() <= 0 && StringUtils.isBlank(plano.getNome()))
-			throw new Exception("Plano de conta deve ter informação de Id ou número");
 		else if (plano.getId() > 0 && usuarioService.obterPlanoContas(usuario.getId()).stream()
 				.filter(x -> x.getId() == plano.getId()).findFirst().orElse(null) == null)
 			throw new Exception("Id informado não se refere a nenhum plano de conta do usuário da conta.");
@@ -140,14 +136,14 @@ public class TransacaoServiceImpl implements TransacaoService {
 
 		PlanoConta defaultPC = new PlanoConta();
 		defaultPC.setTipo(tipo);
-		defaultPC.setNome(StringUtils.isBlank(nomePC) ? tipo.name() : nomePC);
+		defaultPC.setNome(idPC <= 0 && StringUtils.isBlank(nomePC) ? tipo.name() : nomePC);
 
-		defaultPC.setUsuario(usuarioService.encontrarUsuario(idPC));
+		defaultPC.setUsuario(usuarioService.encontrarUsuario(idUsuario));
 
 		if (idPC > 0)
 			return listPC.stream().filter(x -> x.getId().equals(idPC)).findFirst().orElse(defaultPC);
 
-		return listPC.stream().filter(x -> x.getNome().equals(nomePC)).findFirst().orElse(defaultPC);
+		return listPC.stream().filter(x -> x.getNome().equals(defaultPC.getNome())).findFirst().orElse(defaultPC);
 	}
 
 	private PlanoConta obterPC(Integer idUsuario, Integer idPC, String nomePC) {
