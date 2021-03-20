@@ -5,6 +5,7 @@ bin/
 .classpath
 .settings/
 .vscode
+.factorypath
 
 # Package Files #
 *.jar

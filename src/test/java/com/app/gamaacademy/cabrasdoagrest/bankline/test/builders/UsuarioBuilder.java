@@ -1,7 +1,9 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.test.builders;
 
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
+import com.app.gamaacademy.cabrasdoagrest.bankline.utils.Mapper;
 
 import org.springframework.stereotype.Component;
 
@@ -57,5 +59,9 @@ public class UsuarioBuilder {
         this.conta = new ContaBuilder().build(usuario);
 
         return usuario;
+    }
+
+    public UsuarioDTO buildDto() {
+        return Mapper.convertUsuarioToDto(build());
     }
 }

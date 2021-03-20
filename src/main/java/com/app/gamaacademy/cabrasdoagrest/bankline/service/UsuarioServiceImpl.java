@@ -31,7 +31,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public Integer criarUsuario(UsuarioDTO usuario) {
 		if(!validaLoginCpfUnicos(usuario.getLogin(), usuario.getCpf()))
 			throw new DataIntegrityViolationException("CPF e/ou login já existe não é possível cadastrar!");
-
+			
 		Usuario entity = Mapper.convertUsuarioDtoToEntity(usuario);
 
 		Integer id = repository.save(entity).getId();
@@ -78,14 +78,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public boolean validaLoginCpfUnicos(String login, String cpf) {
 		return repository.findByLoginOrCpfEquals(login, cpf) == null;
-	}
-
-	public void setRepository(UsuarioRepository usuarioRepository) {
-		this.repository = usuarioRepository;
-	}
-
-	public void setMapper(MapperFacade mapperMock) {
-		this.mapper = mapperMock;
 	}
 
 }

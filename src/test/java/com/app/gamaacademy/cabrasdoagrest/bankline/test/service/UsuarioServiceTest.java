@@ -3,12 +3,13 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.test.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
+import com.app.gamaacademy.cabrasdoagrest.bankline.service.ContaService;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioServiceImpl;
 import com.app.gamaacademy.cabrasdoagrest.bankline.test.builders.UsuarioBuilder;
 
@@ -20,10 +21,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-
-import ma.glasnost.orika.MapperFacade;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
@@ -35,94 +35,108 @@ public class UsuarioServiceTest {
     @Autowired
     private UsuarioBuilder umUsuario;
 
-    @Autowired
-	private MapperFacade mapper;
+    @MockBean
+    private UsuarioRepository repositoryMock;
+
+    @MockBean
+    private ContaService contaServiceMock;
 
     @BeforeEach
     public void reset() {
         umUsuario.valido();
+        when(repositoryMock.findByLoginOrCpfEquals(any(String.class), any(String.class))).thenReturn(null);
     }
 
     @Test
 	@Order(1)
 	@DisplayName("Deve lançar uma exceção ao tentar criar um usuário com login inválido")
 	public void criandoUsuarioComLoginInvalido() {
-		Usuario usuario = umUsuario.comLoginInvalido().build();
-
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            service.criarUsuario(mapper.map(usuario, UsuarioDTO.class));
-        });
+		UsuarioDTO usuarioDTO = umUsuario.comLoginInvalido().buildDto();
 
         String mensagemEsperada = "O valor para [login] não é válido!";
-        String mansagemRecebida = exception.getMessage();
+        
+        when(repositoryMock.save(any(Usuario.class))).thenThrow(new InvalidDataAccessApiUsageException(mensagemEsperada));
+        
+        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
+            service.criarUsuario(usuarioDTO);
+        });
 
-        assertTrue(mansagemRecebida.contains(mensagemEsperada));
+        String mensagemRecebida = exception.getMessage();
+
+        assertTrue(mensagemRecebida.contains(mensagemEsperada));
 	}
 
     @Test
 	@Order(2)
 	@DisplayName("Deve lançar uma exceção ao tentar criar um usuário com cpf inválido")
 	public void criandoUsuarioComCpfInvalido() {
-		Usuario usuario = umUsuario.comCpfInvalido().build();
+		UsuarioDTO usuarioDTO = umUsuario.comCpfInvalido().buildDto();
+        
+        String mensagemEsperada = "O valor para [cpf] não é válido!";
 
+        when(repositoryMock.save(any(Usuario.class))).thenThrow(new InvalidDataAccessApiUsageException(mensagemEsperada));
+        
         Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            service.criarUsuario(mapper.map(usuario, UsuarioDTO.class));
+            service.criarUsuario(usuarioDTO);
         });
 
-        String mensagemEsperada = "O valor para [cpf] não é válido!";
-        String mansagemRecebida = exception.getMessage();
+        String mensagemRecebida = exception.getMessage();
 
-        assertTrue(mansagemRecebida.contains(mensagemEsperada));
+        assertTrue(mensagemRecebida.contains(mensagemEsperada));
 	}
 
     @Test
 	@Order(3)
 	@DisplayName("Deve lançar uma exceção ao tentar criar um usuário com senha inválida")
 	public void criandoUsuarioComSenhaInvalida() {
-		Usuario usuario = umUsuario.comSenhaInvalida().build();
-
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            service.criarUsuario(mapper.map(usuario, UsuarioDTO.class));
-        });
+		UsuarioDTO usuarioDTO = umUsuario.comSenhaInvalida().buildDto();
 
         String mensagemEsperada = "O valor para [senha] não é válido!";
-        String mansagemRecebida = exception.getMessage();
 
-        assertTrue(mansagemRecebida.contains(mensagemEsperada));
+        when(repositoryMock.save(any(Usuario.class))).thenThrow(new InvalidDataAccessApiUsageException(mensagemEsperada));
+        
+        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
+            service.criarUsuario(usuarioDTO);
+        });
+
+        String mensagemRecebida = exception.getMessage();
+
+        assertTrue(mensagemRecebida.contains(mensagemEsperada));
 	}
 
     @Test
 	@Order(4)
 	@DisplayName("Deve lançar uma exceção ao tentar criar um usuário com nome inválido")
 	public void criandoUsuarioComNomeInvalida() {
-		Usuario usuario = umUsuario.comNomeInvalido().build();
-
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            service.criarUsuario(mapper.map(usuario, UsuarioDTO.class));
-        });
+		UsuarioDTO usuarioDTO = umUsuario.comNomeInvalido().buildDto();
 
         String mensagemEsperada = "O valor para [nome] não é válido!";
-        String mansagemRecebida = exception.getMessage();
 
-        assertTrue(mansagemRecebida.contains(mensagemEsperada));
+        when(repositoryMock.save(any(Usuario.class))).thenThrow(new InvalidDataAccessApiUsageException(mensagemEsperada));
+        
+        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
+            service.criarUsuario(usuarioDTO);
+        });
+
+        String mensagemRecebida = exception.getMessage();
+
+        assertTrue(mensagemRecebida.contains(mensagemEsperada));
 	}
 
     @Test
 	@Order(5)
 	@DisplayName("Deve lançar uma exceção ao tentar criar um usuário com login e/ou CPF já cadastrado")
 	public void criandoUsuarioComLoginExistente() {
-		Usuario usuario = umUsuario.build();
-        UsuarioDTO usuarioDTO = mapper.map(usuario, UsuarioDTO.class);
-        UsuarioServiceImpl usuarioService = mock(UsuarioServiceImpl.class);
-
-        when(usuarioService.criarUsuario(usuarioDTO))
-        .thenThrow(new DataIntegrityViolationException("CPF e/ou login já existe não é possível cadastrar!"));
-
-        Throwable exception = assertThrows(DataIntegrityViolationException.class, () -> {
-            usuarioService.criarUsuario(usuarioDTO);
-        });
+		UsuarioDTO usuarioDTO = umUsuario.buildDto();
 
         String mensagemEsperada = "CPF e/ou login já existe não é possível cadastrar!";
+
+        when(repositoryMock.findByLoginOrCpfEquals(any(String.class), any(String.class))).thenReturn(umUsuario.build());
+        
+        Throwable exception = assertThrows(DataIntegrityViolationException.class, () -> {
+            service.criarUsuario(usuarioDTO);
+        });
+
         String mansagemRecebida = exception.getMessage();
 
         assertTrue(mansagemRecebida.contains(mensagemEsperada));
@@ -132,16 +146,12 @@ public class UsuarioServiceTest {
 	@Order(6)
 	@DisplayName("Deve retornar um id ao criar um usuário")
 	public void criandoUsuario() {
-		Usuario usuario = umUsuario.comId().build();
-        UsuarioDTO usuarioDTO = mapper.map(usuario, UsuarioDTO.class);
-        UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
-		MapperFacade mapperMock = mock(MapperFacade.class);
-
-        when(usuarioRepository.save(usuario)).thenReturn(usuario);
-        when(mapperMock.map(usuarioDTO, Usuario.class)).thenReturn(usuario);
-        service.setRepository(usuarioRepository);
-        service.setMapper(mapperMock);
-
+        Usuario usuario = umUsuario.comId().build();
+        UsuarioDTO usuarioDTO = umUsuario.comId().buildDto();
+    
+        when(repositoryMock.save(any(Usuario.class))).thenReturn(usuario);
+        when(contaServiceMock.criar(usuario.getId())).thenReturn(1L);
+        
         Integer idEsperado = usuario.getId();
         Integer idRecebido = service.criarUsuario(usuarioDTO);
 
