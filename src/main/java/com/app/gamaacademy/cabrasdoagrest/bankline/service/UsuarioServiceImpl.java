@@ -89,4 +89,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		this.repository = usuarioRepository;
 	}
 
+	public void setMapper(MapperFacade mapperMock) {
+		this.mapper = mapperMock;
+	}
+
 }

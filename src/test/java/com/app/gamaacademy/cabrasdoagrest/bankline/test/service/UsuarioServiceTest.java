@@ -133,13 +133,17 @@ public class UsuarioServiceTest {
 	@DisplayName("Deve retornar um id ao criar um usuário")
 	public void criandoUsuario() {
 		Usuario usuario = umUsuario.comId().build();
+        UsuarioDTO usuarioDTO = mapper.map(usuario, UsuarioDTO.class);
         UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
-			
+		MapperFacade mapperMock = mock(MapperFacade.class);
+
         when(usuarioRepository.save(usuario)).thenReturn(usuario);
+        when(mapperMock.map(usuarioDTO, Usuario.class)).thenReturn(usuario);
         service.setRepository(usuarioRepository);
+        service.setMapper(mapperMock);
 
         Integer idEsperado = usuario.getId();
-        Integer idRecebido = service.criarUsuario(mapper.map(usuario, UsuarioDTO.class));
+        Integer idRecebido = service.criarUsuario(usuarioDTO);
 
         assertEquals(idEsperado, idRecebido);
 	}
