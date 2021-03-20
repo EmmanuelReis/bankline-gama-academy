@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
@@ -30,19 +31,17 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Integer criarUsuario(UsuarioDTO usuario) {
-		Integer id = 0;
-
 		Usuario entity = mapper.map(usuario, Usuario.class);
+		Conta novaConta = new Conta();
 
-		try {
-			Conta novaConta = new Conta();
-			entity.setConta(novaConta);
-			novaConta.setUsuario(entity);
-			id = repository.save(entity).getId();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		if(!validaLoginCpfUnicos(usuario.getLogin(), usuario.getCpf()))
+			throw new DataIntegrityViolationException("CPF e/ou login já existe não é possível cadastrar!");
+		
+		entity.setConta(novaConta);
+		novaConta.setUsuario(entity);
+		
+		Integer id = repository.save(entity).getId();
+		
 		return id;
 	}
 
@@ -84,6 +83,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public boolean validaLoginCpfUnicos(String login, String cpf) {
 		return repository.findByLoginOrCpfEquals(login, cpf) == null;
+	}
+
+	public void setRepository(UsuarioRepository usuarioRepository) {
+		this.repository = usuarioRepository;
 	}
 
 }
