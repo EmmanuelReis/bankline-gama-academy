@@ -15,20 +15,8 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 @Configuration
 public class AppConfig {
 
-	private static MapperFactory mapperFactory;
-
-	static {
-		mapperFactory = new DefaultMapperFactory.Builder().build();
-
-		mapperFactory.classMap(Usuario.class, UsuarioDTO.class).exclude("planos").byDefault().register();
-		mapperFactory.classMap(UsuarioDTO.class, Usuario.class).exclude("conta").byDefault().register();
-
-		mapperFactory.classMap(PlanoConta.class, PlanoContaDTO.class).exclude("usuario").byDefault().register();
-		mapperFactory.classMap(PlanoContaDTO.class, PlanoConta.class).byDefault().register();
-	}
-
 	@Bean
 	public MapperFacade mapperFacade() {
-		return mapperFactory.getMapperFacade();
+		return MapperInitializer.getMapperFacade();
 	}
 }
