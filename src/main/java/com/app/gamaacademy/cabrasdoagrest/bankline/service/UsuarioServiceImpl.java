@@ -9,13 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.PlanoContaRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
-
-import ma.glasnost.orika.MapperFacade;
+import com.app.gamaacademy.cabrasdoagrest.bankline.utils.Mapper;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -27,21 +25,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private PlanoContaRepository pcRepository;
 
 	@Autowired
-	private MapperFacade mapper;
+	private ContaService contaService;
 
 	@Override
 	public Integer criarUsuario(UsuarioDTO usuario) {
-		Usuario entity = mapper.map(usuario, Usuario.class);
-		Conta novaConta = new Conta();
-
 		if(!validaLoginCpfUnicos(usuario.getLogin(), usuario.getCpf()))
 			throw new DataIntegrityViolationException("CPF e/ou login já existe não é possível cadastrar!");
-		
-		entity.setConta(novaConta);
-		novaConta.setUsuario(entity);
-		
+
+		Usuario entity = Mapper.convertUsuarioDtoToEntity(usuario);
+
 		Integer id = repository.save(entity).getId();
-		
+		contaService.criar(id);
+
 		return id;
 	}
 
@@ -60,7 +55,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public UsuarioDTO encontrarUsuario(Integer id) {
-		UsuarioDTO ret = mapper.map(repository.findById(id).orElse(null), UsuarioDTO.class);
+		UsuarioDTO ret = Mapper.convertUsuarioToDto(repository.findById(id).orElse(null));
 		ret.setPlanos(obterPlanoContas(id));
 		return ret;
 	}
@@ -75,7 +70,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		List<PlanoConta> list = pcRepository.findByUsuarioIdEquals((int) id);
 		List<PlanoContaDTO> ret = new ArrayList<>();
 
-		list.forEach(p -> ret.add(mapper.map(p, PlanoContaDTO.class)));
+		list.forEach(p -> ret.add(Mapper.convertPlanoContaToDto(p)));
 
 		return ret;
 	}
