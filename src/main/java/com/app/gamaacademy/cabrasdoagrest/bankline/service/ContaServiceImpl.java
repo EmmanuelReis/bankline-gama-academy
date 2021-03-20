@@ -87,7 +87,7 @@ public class ContaServiceImpl implements ContaService {
 		if (conta == null)
 			throw new Exception("Conta não exite");
 
-		List<Transacao> transacoes = null;// transRepo.findByContaOrigemNumeroEquals(numero);
+		List<Transacao> transacoes = null;
 
 		String dtInicioFormated = dtInicio != null
 				? dtInicio.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -105,6 +105,7 @@ public class ContaServiceImpl implements ContaService {
 		ret.setFim(dtFim != null ? dtFim
 				: !transacoes.isEmpty() ? transacoes.get(transacoes.size() - 1).getData().toLocalDate() : null);
 		ret.setSaldoAtual(conta.getSaldo());
+		ret.setSaldoPeriodo(transacoes.stream().mapToDouble(p -> p.getValor()).reduce(0, (s, e) -> s + e));
 
 		return ret;
 	}

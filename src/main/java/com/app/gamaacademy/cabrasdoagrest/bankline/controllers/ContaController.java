@@ -21,16 +21,17 @@ public class ContaController {
 	@Autowired
 	private ContaService service;
 
+	/*
+	 * @GetMapping("/{numero}") public ResponseEntity<ExtratoDTO>
+	 * obter(@PathVariable(value = "numero") Long numero) throws Exception {
+	 * ExtratoDTO ret = service.extrato(numero);
+	 * 
+	 * return ResponseEntity.ok().body(ret); }
+	 */
+
 	@GetMapping("/{numero}")
-	public ResponseEntity<ExtratoDTO> obter(@PathVariable(value = "numero") Long numero) throws Exception {
-		ExtratoDTO ret = service.extrato(numero);
-
-		return ResponseEntity.ok().body(ret);
-	}
-
-	@GetMapping("/{numero}/detalhado")
 	public ResponseEntity<ExtratoDTO> obterPorData(@PathVariable(value = "numero") Long numero,
-			@RequestParam("dtInicio") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dtInicio,
+			@RequestParam(value = "dtInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dtInicio,
 			@RequestParam(value = "dtFim", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dtFim)
 			throws Exception {
 		ExtratoDTO ret = service.extrato(numero, dtInicio, dtFim);
