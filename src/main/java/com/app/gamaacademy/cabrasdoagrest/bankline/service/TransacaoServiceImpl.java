@@ -14,8 +14,7 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.TransacaoRepository;
-
-import ma.glasnost.orika.MapperFacade;
+import com.app.gamaacademy.cabrasdoagrest.bankline.utils.Mapper;
 
 @Service
 public class TransacaoServiceImpl implements TransacaoService {
@@ -28,9 +27,6 @@ public class TransacaoServiceImpl implements TransacaoService {
 
 	@Autowired
 	private UsuarioService usuarioService;
-
-	@Autowired
-	private MapperFacade mapper;
 
 	@Override
 	public Integer salvar(Transacao entity) throws Exception {
@@ -141,7 +137,7 @@ public class TransacaoServiceImpl implements TransacaoService {
 		List<PlanoConta> listPC = new ArrayList<>();
 		Usuario u = usuarioService.encontrarUsuarioDB(idUsuario);
 
-		usuarioService.obterPlanoContas(idUsuario).forEach(p -> listPC.add(mapper.map(p, PlanoConta.class)));
+		usuarioService.obterPlanoContas(idUsuario).forEach(p -> listPC.add(Mapper.convertPlanoContaDtoToEntity(p)));
 
 		PlanoConta defaultPC = new PlanoConta();
 		defaultPC.setTipo(tipo);
@@ -160,7 +156,7 @@ public class TransacaoServiceImpl implements TransacaoService {
 	private PlanoConta obterPC(Integer idUsuario, Integer idPC, String nomePC) {
 		List<PlanoConta> listPC = new ArrayList<>();
 
-		usuarioService.obterPlanoContas(idUsuario).forEach(p -> listPC.add(mapper.map(p, PlanoConta.class)));
+		usuarioService.obterPlanoContas(idUsuario).forEach(p -> listPC.add(Mapper.convertPlanoContaDtoToEntity(p)));
 
 		if (idPC > 0)
 			return listPC.stream().filter(x -> x.getId().equals(idPC)).findFirst().orElse(null);

@@ -12,5 +12,7 @@ public interface PlanoContaRepository extends JpaRepository<PlanoConta, Integer>
 	//public List<PlanoConta> obterPlanoContasUsuario(int idUsuario);
 	
 	public List<PlanoConta> findByUsuarioIdEquals(int idUsuario);
+	
+	
 
 }

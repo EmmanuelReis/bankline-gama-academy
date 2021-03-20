@@ -12,8 +12,7 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.PlanoContaRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
-
-import ma.glasnost.orika.MapperFacade;
+import com.app.gamaacademy.cabrasdoagrest.bankline.utils.Mapper;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -27,14 +26,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Autowired
 	private ContaService contaService;
 
-	@Autowired
-	private MapperFacade mapper;
-
 	@Override
 	public Integer criarUsuario(UsuarioDTO usuario) {
 		Integer id = 0;
 
-		Usuario entity = mapper.map(usuario, Usuario.class);
+		Usuario entity = Mapper.convertUsuarioDtoToEntity(usuario);
 
 		try {
 			/*
@@ -65,7 +61,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public UsuarioDTO encontrarUsuario(Integer id) {
-		UsuarioDTO ret = mapper.map(repository.findById(id).orElse(null), UsuarioDTO.class);
+		UsuarioDTO ret = Mapper.convertUsuarioToDto(repository.findById(id).orElse(null));
 		ret.setPlanos(obterPlanoContas(id));
 		return ret;
 	}
@@ -80,7 +76,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		List<PlanoConta> list = pcRepository.findByUsuarioIdEquals((int) id);
 		List<PlanoContaDTO> ret = new ArrayList<>();
 
-		list.forEach(p -> ret.add(mapper.map(p, PlanoContaDTO.class)));
+		list.forEach(p -> ret.add(Mapper.convertPlanoContaToDto(p)));
 
 		return ret;
 	}
