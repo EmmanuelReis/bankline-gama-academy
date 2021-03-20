@@ -1,0 +1,12 @@
+*.class
+target/
+bin/
+.project
+.classpath
+.settings/
+.vscode
+.factorypath
+
+# Package Files #
+*.jar
+hs_err_pid*
