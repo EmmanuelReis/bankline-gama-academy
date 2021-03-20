@@ -1,16 +1,17 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
-
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
+
 public interface UsuarioService {
-	public Integer criarUsuario(Usuario usuario)
+	public Integer criarUsuario(UsuarioDTO usuario)
 			throws InvalidDataAccessApiUsageException, DataIntegrityViolationException, DataRetrievalFailureException;
 
 	public void atualizarUsuario(Usuario usuario)
@@ -18,9 +19,11 @@ public interface UsuarioService {
 
 	public void deletarUsuario(Integer id);
 
-	public Usuario encontrarUsuario(Integer id);
-	
+	public UsuarioDTO encontrarUsuario(Integer id);
+
+	public Usuario encontrarUsuarioDB(Integer id);
+
 	public boolean validaLoginCpfUnicos(String login, String cpf);
 
-	public List<PlanoConta> obterPlanoContas(int id);
+	public List<PlanoContaDTO> obterPlanoContas(int id);
 }
