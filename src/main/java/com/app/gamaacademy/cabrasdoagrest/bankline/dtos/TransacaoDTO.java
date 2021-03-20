@@ -1,6 +1,7 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.dtos;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,5 +20,6 @@ public class TransacaoDTO {
 	private PlanoContaDTO planoConta;
 	private ContaDTO contaOrigem;
 	private ContaDTO contaDestino;
+	private Map<String, Double> subtotal;
 
 }

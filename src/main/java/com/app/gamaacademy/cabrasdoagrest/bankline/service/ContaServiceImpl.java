@@ -1,6 +1,7 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,6 +70,16 @@ public class ContaServiceImpl implements ContaService {
 
 	@Override
 	public ExtratoDTO extrato(Long numero) throws Exception {
+		return extrato(numero, null, null);
+	}
+
+	@Override
+	public ExtratoDTO extrato(Long numero, LocalDate dtInicio) throws Exception {
+		return extrato(numero, dtInicio, null);
+	}
+
+	@Override
+	public ExtratoDTO extrato(Long numero, LocalDate dtInicio, LocalDate dtFim) throws Exception {
 		ExtratoDTO ret = new ExtratoDTO();
 
 		Conta conta = contaRepo.findById(numero).get();
@@ -76,27 +87,27 @@ public class ContaServiceImpl implements ContaService {
 		if (conta == null)
 			throw new Exception("Conta não exite");
 
-		List<Transacao> transacoes = transRepo.findByContaOrigemNumeroEquals(numero);
+		List<Transacao> transacoes = null;
+
+		String dtInicioFormated = dtInicio != null
+				? dtInicio.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+				: LocalDate.MIN.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		String dtFimFormated = dtFim != null ? dtFim.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+				: LocalDate.now().atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+		transacoes = transRepo.obterExtrato(numero, dtInicioFormated, dtFimFormated);
+
 		transacoes.forEach(t -> ret.getTransacoes().add(Mapper.convertTransacaoToDto(t)));
 
 		transacoes.sort((d1, d2) -> d1.getData().compareTo(d2.getData()));
-		ret.setInicio(transacoes.get(0).getData().toLocalDate());
-		ret.setFim(transacoes.get(transacoes.size() - 1).getData().toLocalDate());
-		ret.setSaldo(conta.getSaldo());
+		ret.setInicio(
+				dtInicio != null ? dtInicio : !transacoes.isEmpty() ? transacoes.get(0).getData().toLocalDate() : null);
+		ret.setFim(dtFim != null ? dtFim
+				: !transacoes.isEmpty() ? transacoes.get(transacoes.size() - 1).getData().toLocalDate() : null);
+		ret.setSaldoAtual(conta.getSaldo());
+		ret.setSaldoPeriodo(transacoes.stream().mapToDouble(p -> p.getValor()).reduce(0, (s, e) -> s + e));
 
 		return ret;
-	}
-
-	@Override
-	public ExtratoDTO extrato(LocalDate initialDate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ExtratoDTO extrato(LocalDate initialDate, LocalDate endData) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

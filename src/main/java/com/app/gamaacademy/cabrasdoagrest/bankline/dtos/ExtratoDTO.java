@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ExtratoDTO {
 
-	private Double saldo = 0.0;
+	private Double saldoAtual = 0.0;
+	private Double saldoPeriodo = 0.0;
 	private LocalDate inicio;
 	private LocalDate fim;
 	private List<TransacaoDTO> transacoes = new ArrayList<>();
