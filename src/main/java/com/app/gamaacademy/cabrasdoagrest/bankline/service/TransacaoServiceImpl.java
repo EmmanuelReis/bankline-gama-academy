@@ -1,5 +1,6 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,8 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.TransacaoRepository;
 
+import ma.glasnost.orika.MapperFacade;
+
 @Service
 public class TransacaoServiceImpl implements TransacaoService {
 
@@ -25,6 +28,9 @@ public class TransacaoServiceImpl implements TransacaoService {
 
 	@Autowired
 	private UsuarioService usuarioService;
+
+	@Autowired
+	private MapperFacade mapper;
 
 	@Override
 	public Integer salvar(Transacao entity) throws Exception {
@@ -52,9 +58,8 @@ public class TransacaoServiceImpl implements TransacaoService {
 			entity.setContaDestino(contaRepo.findById(entity.getContaDestino().getNumero()).get());
 
 			/* Criando Transação de Receita na conta destino, para fins de extrato */
-			PlanoConta pc = new PlanoConta();
-			pc.setNome("TRANSFERENCIA");
-			pc.setTipo(TipoOperacao.RECEITA);
+			PlanoConta pc = preencherPC(entity.getContaDestino().getUsuario().getId(), 0, "TRANSFERENCIA",
+					TipoOperacao.RECEITA);
 
 			transDest = new Transacao();
 			transDest.setContaOrigem(entity.getContaDestino());
@@ -132,22 +137,30 @@ public class TransacaoServiceImpl implements TransacaoService {
 	}
 
 	private PlanoConta preencherPC(Integer idUsuario, Integer idPC, String nomePC, TipoOperacao tipo) {
-		List<PlanoConta> listPC = usuarioService.obterPlanoContas(idUsuario);
+		PlanoConta result = null;
+		List<PlanoConta> listPC = new ArrayList<>();
+		Usuario u = usuarioService.encontrarUsuarioDB(idUsuario);
+
+		usuarioService.obterPlanoContas(idUsuario).forEach(p -> listPC.add(mapper.map(p, PlanoConta.class)));
 
 		PlanoConta defaultPC = new PlanoConta();
 		defaultPC.setTipo(tipo);
 		defaultPC.setNome(idPC <= 0 && StringUtils.isBlank(nomePC) ? tipo.name() : nomePC);
 
-		defaultPC.setUsuario(usuarioService.encontrarUsuario(idUsuario));
-
 		if (idPC > 0)
-			return listPC.stream().filter(x -> x.getId().equals(idPC)).findFirst().orElse(defaultPC);
+			result = listPC.stream().filter(x -> x.getId().equals(idPC)).findFirst().orElse(defaultPC);
+		else
+			result = listPC.stream().filter(x -> x.getNome().equals(defaultPC.getNome())).findFirst().orElse(defaultPC);
 
-		return listPC.stream().filter(x -> x.getNome().equals(defaultPC.getNome())).findFirst().orElse(defaultPC);
+		result.setUsuario(u);
+
+		return result;
 	}
 
 	private PlanoConta obterPC(Integer idUsuario, Integer idPC, String nomePC) {
-		List<PlanoConta> listPC = usuarioService.obterPlanoContas(idUsuario);
+		List<PlanoConta> listPC = new ArrayList<>();
+
+		usuarioService.obterPlanoContas(idUsuario).forEach(p -> listPC.add(mapper.map(p, PlanoConta.class)));
 
 		if (idPC > 0)
 			return listPC.stream().filter(x -> x.getId().equals(idPC)).findFirst().orElse(null);

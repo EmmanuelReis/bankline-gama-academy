@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioService;
 
 @RestController
@@ -23,15 +23,15 @@ public class UsuarioController {
 	private UsuarioService service;
 
 	@PostMapping
-	public ResponseEntity<Void> criar(@RequestBody Usuario usuario) {
+	public ResponseEntity<Void> criar(@RequestBody UsuarioDTO usuario) {
 		Integer id = service.criarUsuario(usuario);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
 		return ResponseEntity.created(uri).build();
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Usuario> obter(@PathVariable(value = "id") Integer id) {
-		Usuario ret = service.encontrarUsuario(id);
+	public ResponseEntity<UsuarioDTO> obter(@PathVariable(value = "id") Integer id) {
+		UsuarioDTO ret = service.encontrarUsuario(id);
 		return ResponseEntity.ok().body(ret);
 	}
 
