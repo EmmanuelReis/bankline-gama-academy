@@ -17,8 +17,8 @@ public interface ContaService {
 
 	public ExtratoDTO extrato(Long numero) throws Exception;
 
-	public ExtratoDTO extrato(LocalDate initialDate);
+	public ExtratoDTO extrato(Long numero, LocalDate initialDate) throws Exception;
 
-	public ExtratoDTO extrato(LocalDate initialDate, LocalDate endData);
+	public ExtratoDTO extrato(Long numero, LocalDate initialDate, LocalDate endData) throws Exception;
 
 }
