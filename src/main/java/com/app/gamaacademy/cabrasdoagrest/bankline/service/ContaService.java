@@ -8,6 +8,8 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
 
 public interface ContaService {
 
+	public Long criar(Integer idUsuario);
+	
 	public Long salvar(Conta conta);
 
 	public Conta obter(Long numero);

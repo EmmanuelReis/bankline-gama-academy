@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.PlanoContaRepository;
@@ -26,6 +25,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private PlanoContaRepository pcRepository;
 
 	@Autowired
+	private ContaService contaService;
+
+	@Autowired
 	private MapperFacade mapper;
 
 	@Override
@@ -35,10 +37,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 		Usuario entity = mapper.map(usuario, Usuario.class);
 
 		try {
-			Conta novaConta = new Conta();
-			entity.setConta(novaConta);
-			novaConta.setUsuario(entity);
+			/*
+			 * Conta novaConta = new Conta(); entity.setConta(novaConta);
+			 * novaConta.setUsuario(entity);
+			 */
 			id = repository.save(entity).getId();
+			contaService.criar(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
