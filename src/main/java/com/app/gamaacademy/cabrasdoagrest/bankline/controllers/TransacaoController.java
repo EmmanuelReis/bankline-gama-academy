@@ -34,7 +34,7 @@ public class TransacaoController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Transacao> obter(@PathVariable(value = "id") Integer id) {
+	public ResponseEntity<Transacao> obter(@PathVariable(value = "id") Integer id) throws Exception {
 		Transacao ret = service.obter(id);
 
 		return ResponseEntity.ok().body(ret);
