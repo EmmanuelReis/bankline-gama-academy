@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
@@ -33,12 +35,7 @@ public class TransacaoServiceImpl implements TransacaoService {
 
 		Transacao transDest = null;
 
-		try {
-			validar(entity);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("Erro na validação" + e.getMessage());
-		}
+		validar(entity);
 
 		entity.setContaOrigem(contaRepo.findById(entity.getContaOrigem().getNumero()).get());
 
@@ -78,47 +75,46 @@ public class TransacaoServiceImpl implements TransacaoService {
 		return entity.getId();
 	}
 
-	private void validar(Transacao entity) throws Exception {
+	private void validar(Transacao entity) 
+		throws DataRetrievalFailureException, InvalidDataAccessApiUsageException, Exception {
 		if (entity == null)
-			throw new NullPointerException("transacao não pode ser nulo.");
+			throw new NullPointerException("Transação não pode ser nula");
 
 		if (entity.getContaOrigem() == null || entity.getContaOrigem().getNumero() <= 0)
-			throw new Exception("Conta origem não pode ser nula ou sem informar numero.");
+			throw new InvalidDataAccessApiUsageException("Conta origem não pode ser nula ou sem informar numero");
 
 		Conta contaOrigem = contaRepo.findById(entity.getContaOrigem().getNumero()).orElse(null);
-		if (contaOrigem == null)
-			throw new Exception("Conta origem informada não existe");
 
-		if (entity.getValor() == 0)
-			throw new Exception("Valor precisa ser diferente de zero");
+		if (contaOrigem == null)
+			throw new InvalidDataAccessApiUsageException("Conta origem informada não existe");
+
+		if (entity.getValor() <= 0)
+			throw new InvalidDataAccessApiUsageException("Valor precisa ser maior que zero");
 
 		Usuario usuario = contaOrigem.getUsuario();
 		PlanoConta plano = entity.getPlanoConta();
+
 		if (plano == null)
-			throw new Exception("Plano de conta dever ser informado.");
+			throw new InvalidDataAccessApiUsageException("Plano de conta dever ser informado");
 		else if (plano.getTipo() == null || plano.getTipo().getCodigo() == null)
-			throw new Exception("Valor do Tipo de Operação não é válido.");
+			throw new InvalidDataAccessApiUsageException("Valor do Tipo de Operação não é válido");
 		else if (plano.getId() > 0 && usuarioService.obterPlanoContas(usuario.getId()).stream()
 				.filter(x -> x.getId() == plano.getId()).findFirst().orElse(null) == null)
-			throw new Exception("Id informado não se refere a nenhum plano de conta do usuário da conta.");
-		else if (StringUtils.isNotBlank(plano.getNome()) && obterPC(usuario.getId(), 0, plano.getNome()) == null
-				&& plano.getTipo() == null) {
-			throw new Exception(
-					"Nome do Plano de conta não está cadastrado para o usuário e precisa de TipoPlanoConta válido.");
+			throw new DataRetrievalFailureException("Id informado não se refere a nenhum plano de conta do usuário da conta");
+		else if (StringUtils.isNotBlank(plano.getNome()) && obterPC(usuario.getId(), 0, plano.getNome()) == null) {
+			throw new DataRetrievalFailureException("Nome do Plano de conta não está cadastrado para o usuário");
 		}
 
-		if (entity.getPlanoConta().getTipo().equals(TipoOperacao.TRANSFERENCIA))
-
-		{
+		if (entity.getPlanoConta().getTipo().equals(TipoOperacao.TRANSFERENCIA)) {
 			if (entity.getContaDestino() == null || entity.getContaDestino().getNumero() <= 0)
-				throw new Exception(
+				throw new InvalidDataAccessApiUsageException(
 						"Para transação de TRANSFERENCIA. Conta destino não pode ser nula ou sem informar numero");
 
 			if (entity.getContaDestino().getNumero().equals(entity.getContaOrigem().getNumero()))
 				throw new Exception("Para transferência Conta destino tem de ser diferente da conta de origem");
 
 			if (contaRepo.findById(entity.getContaDestino().getNumero()).orElse(null) == null)
-				throw new Exception("Conta destino informada não existe");
+				throw new DataRetrievalFailureException("Conta destino informada não existe");
 		}
 	}
 

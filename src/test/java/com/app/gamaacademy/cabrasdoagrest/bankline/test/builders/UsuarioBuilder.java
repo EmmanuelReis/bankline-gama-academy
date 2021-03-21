@@ -56,7 +56,7 @@ public class UsuarioBuilder {
     public Usuario build() {
         Usuario usuario = new Usuario(this.id, this.login, this.cpf, this. senha, this.nome, this.conta);
         
-        this.conta = new ContaBuilder().build(usuario);
+        this.conta = new ContaBuilder().doUsuario(usuario).build();
 
         return usuario;
     }
