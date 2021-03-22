@@ -52,33 +52,6 @@ public class ContaServiceImpl implements ContaService {
 	}
 
 	@Override
-	public Long salvar(Conta conta) {
-		return contaRepo.save(conta).getNumero();
-	}
-
-	@Override
-	public Conta obter(Long numero) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Conta obterContaDeUsuario(Integer idUsuario) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ExtratoDTO extrato(Long numero) throws Exception {
-		return extrato(numero, null, null);
-	}
-
-	@Override
-	public ExtratoDTO extrato(Long numero, LocalDate dtInicio) throws Exception {
-		return extrato(numero, dtInicio, null);
-	}
-
-	@Override
 	public ExtratoDTO extrato(Long numero, LocalDate dtInicio, LocalDate dtFim) throws Exception {
 		ExtratoDTO ret = new ExtratoDTO();
 
