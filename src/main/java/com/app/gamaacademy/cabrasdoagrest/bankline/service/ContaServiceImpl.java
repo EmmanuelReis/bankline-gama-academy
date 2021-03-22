@@ -100,9 +100,9 @@ public class ContaServiceImpl implements ContaService {
 		transacoes.forEach(t -> ret.getTransacoes().add(Mapper.convertTransacaoToDto(t)));
 
 		transacoes.sort((d1, d2) -> d1.getData().compareTo(d2.getData()));
-		ret.setInicio(
+		ret.setDtInicio(
 				dtInicio != null ? dtInicio : !transacoes.isEmpty() ? transacoes.get(0).getData().toLocalDate() : null);
-		ret.setFim(dtFim != null ? dtFim
+		ret.setDtFim(dtFim != null ? dtFim
 				: !transacoes.isEmpty() ? transacoes.get(transacoes.size() - 1).getData().toLocalDate() : null);
 		ret.setSaldoAtual(conta.getSaldo());
 		ret.setSaldoPeriodo(transacoes.stream().mapToDouble(p -> p.getValor()).reduce(0, (s, e) -> s + e));
