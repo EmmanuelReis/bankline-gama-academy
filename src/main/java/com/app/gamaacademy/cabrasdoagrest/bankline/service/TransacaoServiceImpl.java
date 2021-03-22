@@ -9,6 +9,8 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.TransacaoDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
@@ -31,11 +33,13 @@ public class TransacaoServiceImpl implements TransacaoService {
 	private UsuarioService usuarioService;
 
 	@Override
-	public Integer salvar(Transacao entity) throws Exception {
+	public Integer salvar(TransacaoDTO dto) throws Exception {
 
 		Transacao transDest = null;
 
-		validar(entity);
+		validar(dto);
+
+		Transacao entity = Mapper.convertTransacaoDtoToEntity(dto);
 
 		entity.setContaOrigem(contaRepo.findById(entity.getContaOrigem().getNumero()).get());
 
@@ -75,8 +79,8 @@ public class TransacaoServiceImpl implements TransacaoService {
 		return entity.getId();
 	}
 
-	private void validar(Transacao entity) 
-		throws DataRetrievalFailureException, InvalidDataAccessApiUsageException, Exception {
+	private void validar(TransacaoDTO entity)
+			throws DataRetrievalFailureException, InvalidDataAccessApiUsageException, Exception {
 		if (entity == null)
 			throw new NullPointerException("Transação não pode ser nula");
 
@@ -92,7 +96,7 @@ public class TransacaoServiceImpl implements TransacaoService {
 			throw new InvalidDataAccessApiUsageException("Valor precisa ser maior que zero");
 
 		Usuario usuario = contaOrigem.getUsuario();
-		PlanoConta plano = entity.getPlanoConta();
+		PlanoContaDTO plano = entity.getPlanoConta();
 
 		if (plano == null)
 			throw new InvalidDataAccessApiUsageException("Plano de conta dever ser informado");
@@ -100,7 +104,8 @@ public class TransacaoServiceImpl implements TransacaoService {
 			throw new InvalidDataAccessApiUsageException("Valor do Tipo de Operação não é válido");
 		else if (plano.getId() > 0 && usuarioService.obterPlanoContas(usuario.getId()).stream()
 				.filter(x -> x.getId() == plano.getId()).findFirst().orElse(null) == null)
-			throw new DataRetrievalFailureException("Id informado não se refere a nenhum plano de conta do usuário da conta");
+			throw new DataRetrievalFailureException(
+					"Id informado não se refere a nenhum plano de conta do usuário da conta");
 		else if (StringUtils.isNotBlank(plano.getNome()) && obterPC(usuario.getId(), 0, plano.getNome()) == null) {
 			throw new DataRetrievalFailureException("Nome do Plano de conta não está cadastrado para o usuário");
 		}
@@ -119,8 +124,8 @@ public class TransacaoServiceImpl implements TransacaoService {
 	}
 
 	@Override
-	public Transacao obter(Integer id) {
-		return transRepo.findById(id).orElse(null);
+	public TransacaoDTO obter(Integer id) {
+		return Mapper.convertTransacaoToDto(transRepo.findById(id).orElse(null));
 	}
 
 	@Override

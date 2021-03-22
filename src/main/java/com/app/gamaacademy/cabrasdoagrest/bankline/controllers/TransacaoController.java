@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.TransacaoDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.TransacaoService;
 
 @RestController
@@ -23,7 +23,7 @@ public class TransacaoController {
 	private TransacaoService service;
 
 	@PostMapping
-	public ResponseEntity<Void> criar(@RequestBody Transacao transacao) throws Exception {
+	public ResponseEntity<Void> criar(@RequestBody TransacaoDTO transacao) throws Exception {
 
 		Integer id = service.salvar(transacao);
 
@@ -34,10 +34,8 @@ public class TransacaoController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Transacao> obter(@PathVariable(value = "id") Integer id) throws Exception {
-		Transacao ret = service.obter(id);
-
-		return ResponseEntity.ok().body(ret);
+	public ResponseEntity<TransacaoDTO> obter(@PathVariable(value = "id") Integer id) throws Exception {
+		return ResponseEntity.ok().body(service.obter(id));
 	}
 
 }
