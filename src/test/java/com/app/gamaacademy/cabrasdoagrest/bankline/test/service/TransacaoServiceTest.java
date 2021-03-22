@@ -333,7 +333,7 @@ public class TransacaoServiceTest {
 		Transacao transacao = umaTransacao.comId(1).comValor(-10.0).daConta(conta).paraConta(contaDestino)
 				.comPlano(planoConta).build();
 
-		when(repositoryMock.save(any())).thenReturn(transacao);
+		when(repositoryMock.save(any(Transacao.class))).thenReturn(transacao);
 
 		Integer idRecebido = service.salvar(Mapper.convertTransacaoToDto(transacao));
 		Integer idEsperado = transacao.getId();
