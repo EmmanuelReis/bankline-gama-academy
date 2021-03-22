@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.ExtratoDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.NoSuchElementsFoundException;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.ContaService;
 
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +47,12 @@ public class ContaController {
 		ExtratoDTO ret = service.extrato(numero, dtInicio, dtFim);
 
 		return ResponseEntity.ok().body(ret);
+	}
+
+	@GetMapping("error")
+	public String error() {
+		throw new NoSuchElementsFoundException("Conta", "Numero", "123");
+		// return "teste";
 	}
 
 }
