@@ -1,5 +1,6 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.exceptions;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -11,15 +12,21 @@ import lombok.Setter;
 @Setter
 public class BanklineApiException extends ResponseStatusException {
 
+	private String mensagem;
 	private String object;
 	private String property;
 	private String value;
 	private String[] args;
 	private ErrorCode errorCode;
 
-	public BanklineApiException(ErrorCode errorCode, String message) {
-		super(HttpStatus.BAD_REQUEST, message);
+	public BanklineApiException(ErrorCode errorCode) {
+		super(HttpStatus.BAD_REQUEST);
 		this.errorCode = errorCode;
+	}
+
+	public BanklineApiException(ErrorCode errorCode, String mensagem) {
+		this(errorCode);
+		this.mensagem = mensagem;
 	}
 
 	public BanklineApiException(ErrorCode errorCode, String object, String property, String value) {
@@ -68,6 +75,8 @@ public class BanklineApiException extends ResponseStatusException {
 					this.args[0], this.args[1], this.args[2], this.args[3]));
 			break;
 		default:
+			if (StringUtils.isNotBlank(this.mensagem))
+				sb.append(this.getMessage());
 			break;
 		}
 

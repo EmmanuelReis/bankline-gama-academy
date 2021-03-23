@@ -106,8 +106,10 @@ public class TransacaoServiceImpl implements TransacaoService {
 
 		if (plano == null)
 			throw new BanklineApiException(ErrorCode.E0002, "transacao", "plano", null);
-		else if (plano.getTipo() == null || plano.getTipo().getCodigo() == null)
+		else if (plano.getTipo() == null)
 			throw new BanklineApiException(ErrorCode.E0002, "plano", "tipo", null);
+		else if (plano.getTipo().getCodigo() == null)
+			throw new BanklineApiException(ErrorCode.E0004, "transacao", "tipo", plano.getTipo().name());
 		else if (plano.getId() > 0 && usuarioService.obterPlanoContas(usuario.getId()).stream()
 				.filter(x -> x.getId() == plano.getId()).findFirst().orElse(null) == null)
 			throw new BanklineApiException(ErrorCode.E0003, "plano", "tipo", entity.getPlanoConta().getId().toString());
@@ -126,7 +128,7 @@ public class TransacaoServiceImpl implements TransacaoService {
 						entity.getContaDestino().getNumero().toString());
 
 			if (entity.getContaDestino().getNumero().equals(entity.getContaOrigem().getNumero()))
-				throw new BanklineApiException(ErrorCode.E0005, "validação");
+				throw new BanklineApiException(ErrorCode.E0005);
 
 			if (contaRepo.findById(entity.getContaDestino().getNumero()).orElse(null) == null)
 				throw new BanklineApiException(ErrorCode.E0003, "transacao", "contaDestino",
