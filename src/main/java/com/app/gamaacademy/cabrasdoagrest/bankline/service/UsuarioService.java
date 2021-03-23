@@ -23,7 +23,5 @@ public interface UsuarioService {
 
 	public Usuario encontrarUsuarioDB(Integer id);
 
-	public boolean validaLoginCpfUnicos(String login, String cpf);
-
 	public List<PlanoContaDTO> obterPlanoContas(int id);
 }

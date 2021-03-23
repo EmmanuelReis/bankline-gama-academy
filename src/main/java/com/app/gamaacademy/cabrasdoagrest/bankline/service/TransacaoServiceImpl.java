@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.TransacaoDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineApiException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
@@ -82,44 +84,53 @@ public class TransacaoServiceImpl implements TransacaoService {
 	private void validar(TransacaoDTO entity)
 			throws DataRetrievalFailureException, InvalidDataAccessApiUsageException, Exception {
 		if (entity == null)
-			throw new NullPointerException("Transação não pode ser nula");
+			throw new BanklineApiException(ErrorCode.E0001, "transacao", null, null);
 
-		if (entity.getContaOrigem() == null || entity.getContaOrigem().getNumero() <= 0)
-			throw new InvalidDataAccessApiUsageException("Conta origem não pode ser nula ou sem informar numero");
+		if (entity.getContaOrigem() == null)
+			throw new BanklineApiException(ErrorCode.E0002, "transacao", "contaOrigem", null);
+		if (entity.getContaOrigem().getNumero() <= 0)
+			throw new BanklineApiException(ErrorCode.E0004, "transacao", "contaOrigem",
+					entity.getContaOrigem().getNumero().toString());
 
 		Conta contaOrigem = contaRepo.findById(entity.getContaOrigem().getNumero()).orElse(null);
 
 		if (contaOrigem == null)
-			throw new InvalidDataAccessApiUsageException("Conta origem informada não existe");
+			throw new BanklineApiException(ErrorCode.E0003, "transacao", "contaOrigem",
+					entity.getContaOrigem().getNumero().toString());
 
 		if (entity.getValor() <= 0)
-			throw new InvalidDataAccessApiUsageException("Valor precisa ser maior que zero");
+			throw new BanklineApiException(ErrorCode.E0004, "transacao", "valor", entity.getValor().toString());
 
 		Usuario usuario = contaOrigem.getUsuario();
 		PlanoContaDTO plano = entity.getPlanoConta();
 
 		if (plano == null)
-			throw new InvalidDataAccessApiUsageException("Plano de conta dever ser informado");
+			throw new BanklineApiException(ErrorCode.E0002, "transacao", "plano", null);
 		else if (plano.getTipo() == null || plano.getTipo().getCodigo() == null)
-			throw new InvalidDataAccessApiUsageException("Valor do Tipo de Operação não é válido");
+			throw new BanklineApiException(ErrorCode.E0002, "plano", "tipo", null);
 		else if (plano.getId() > 0 && usuarioService.obterPlanoContas(usuario.getId()).stream()
 				.filter(x -> x.getId() == plano.getId()).findFirst().orElse(null) == null)
-			throw new DataRetrievalFailureException(
-					"Id informado não se refere a nenhum plano de conta do usuário da conta");
-		else if (StringUtils.isNotBlank(plano.getNome()) && obterPC(usuario.getId(), 0, plano.getNome()) == null) {
-			throw new DataRetrievalFailureException("Nome do Plano de conta não está cadastrado para o usuário");
-		}
+			throw new BanklineApiException(ErrorCode.E0003, "plano", "tipo", entity.getPlanoConta().getId().toString());
+		/*
+		 * else if (StringUtils.isNotBlank(plano.getNome()) && obterPC(usuario.getId(),
+		 * 0, plano.getNome()) == null) { throw new
+		 * DataRetrievalFailureException("Nome do Plano de conta não está cadastrado para o usuário"
+		 * ); }
+		 */
 
 		if (entity.getPlanoConta().getTipo().equals(TipoOperacao.TRANSFERENCIA)) {
-			if (entity.getContaDestino() == null || entity.getContaDestino().getNumero() <= 0)
-				throw new InvalidDataAccessApiUsageException(
-						"Para transação de TRANSFERENCIA. Conta destino não pode ser nula ou sem informar numero");
+			if (entity.getContaDestino() == null)
+				throw new BanklineApiException(ErrorCode.E0002, "transacao", "contaDestino", null);
+			if (entity.getContaDestino().getNumero() <= 0)
+				throw new BanklineApiException(ErrorCode.E0004, "transacao", "contaOrigem",
+						entity.getContaDestino().getNumero().toString());
 
 			if (entity.getContaDestino().getNumero().equals(entity.getContaOrigem().getNumero()))
-				throw new Exception("Para transferência Conta destino tem de ser diferente da conta de origem");
+				throw new BanklineApiException(ErrorCode.E0005, "validação");
 
 			if (contaRepo.findById(entity.getContaDestino().getNumero()).orElse(null) == null)
-				throw new DataRetrievalFailureException("Conta destino informada não existe");
+				throw new BanklineApiException(ErrorCode.E0003, "transacao", "contaDestino",
+						entity.getContaDestino().getNumero().toString());
 		}
 	}
 

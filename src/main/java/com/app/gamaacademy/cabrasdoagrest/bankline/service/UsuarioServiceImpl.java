@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineApiException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.PlanoContaRepository;
@@ -29,9 +30,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Integer criarUsuario(UsuarioDTO usuario) {
-		if(!validaLoginCpfUnicos(usuario.getLogin(), usuario.getCpf()))
-			throw new DataIntegrityViolationException("CPF e/ou login já existe não é possível cadastrar!");
-			
+		validar(usuario);
+
 		Usuario entity = Mapper.convertUsuarioDtoToEntity(usuario);
 
 		Integer id = repository.save(entity).getId();
@@ -75,9 +75,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return ret;
 	}
 
-	@Override
-	public boolean validaLoginCpfUnicos(String login, String cpf) {
-		return repository.findByLoginOrCpfEquals(login, cpf) == null;
+	private void validar(UsuarioDTO usuario) {
+		if (repository.findByLoginEquals(usuario.getLogin()) != null)
+			throw new BanklineApiException(ErrorCode.E0006, "usuario", "login", usuario.getLogin());
+
+		if (repository.findByCpfEquals(usuario.getCpf()) != null)
+			throw new BanklineApiException(ErrorCode.E0006, "usuario", "cpf", usuario.getCpf());
+
 	}
 
 }

@@ -7,9 +7,11 @@ import javax.persistence.PrePersist;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Component;
 
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineApiException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.Operadores;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
 
@@ -26,8 +28,7 @@ public class UsuarioListener {
 	}
 
 	@PrePersist
-	public void validaInsercaoEAtulizacao(Usuario usuario)
-			throws InvalidDataAccessApiUsageException, DataRetrievalFailureException {
+	public void validaInsercaoEAtulizacao(Usuario usuario) throws Exception {
 		if (usuario.getId() == null) {
 			List<String> parametros = validaUsuario(usuario);
 
@@ -45,7 +46,7 @@ public class UsuarioListener {
 			throw new DataRetrievalFailureException("Usuario não existe não é possível atualizar!");
 	}
 
-	private List<String> validaUsuario(Usuario usuario) {
+	private List<String> validaUsuario(Usuario usuario) throws Exception {
 		List<String[]> lista = new ArrayList<String[]>();
 		List<String> camposInvalidos = new ArrayList<String>();
 
@@ -56,7 +57,10 @@ public class UsuarioListener {
 
 		for (int i = 0; i < lista.size(); i++) {
 			if (lista.get(i)[1].length() > MAX_LENGTH[i] || lista.get(i)[1].length() < MIN_LENGTH[i])
-				camposInvalidos.add(lista.get(i)[0]);
+				// camposInvalidos.add(lista.get(i)[0]);
+				throw new BanklineApiException(ErrorCode.E0007, "Usuario", lista.get(i)[0], lista.get(i)[1],
+						Operadores.MAIOR_IGUAL.getOperador(), MIN_LENGTH[i].toString(),
+						Operadores.MENOR_IGUAL.getOperador(), MAX_LENGTH[i].toString());
 		}
 
 		return camposInvalidos;
