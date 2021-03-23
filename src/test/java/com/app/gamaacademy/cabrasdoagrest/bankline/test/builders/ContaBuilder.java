@@ -2,10 +2,10 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.test.builders;
 
 import java.util.Random;
 
+import org.springframework.stereotype.Component;
+
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
-
-import org.springframework.stereotype.Component;
 
 @Component
 public class ContaBuilder {

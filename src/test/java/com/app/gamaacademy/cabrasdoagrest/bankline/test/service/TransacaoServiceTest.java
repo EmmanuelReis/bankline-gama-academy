@@ -2,7 +2,6 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.test.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -10,7 +9,20 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.TransacaoDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineApiException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
@@ -19,360 +31,294 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.repository.ContaRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.TransacaoRepository;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.TransacaoServiceImpl;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioService;
-import com.app.gamaacademy.cabrasdoagrest.bankline.service.UsuarioServiceImpl;
 import com.app.gamaacademy.cabrasdoagrest.bankline.test.builders.ContaBuilder;
 import com.app.gamaacademy.cabrasdoagrest.bankline.test.builders.PlanoContaBuilder;
 import com.app.gamaacademy.cabrasdoagrest.bankline.test.builders.TransacaoBuilder;
 import com.app.gamaacademy.cabrasdoagrest.bankline.test.builders.UsuarioBuilder;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.utils.Mapper;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 public class TransacaoServiceTest {
-    
-    @Autowired
+
+	@Autowired
 	private TransacaoServiceImpl service;
 
-    @Autowired
-    private TransacaoBuilder umaTransacao;
+	@Autowired
+	private TransacaoBuilder umaTransacao;
 
-    @Autowired
-    private ContaBuilder umaConta;
+	@Autowired
+	private ContaBuilder umaConta;
 
-    @Autowired
-    private PlanoContaBuilder umPlano;
+	@Autowired
+	private PlanoContaBuilder umPlano;
 
-    @Autowired
-    private UsuarioBuilder umUsuario;
+	@Autowired
+	private UsuarioBuilder umUsuario;
 
-    @MockBean
-    private TransacaoRepository repositoryMock;
+	@MockBean
+	private TransacaoRepository repositoryMock;
 
-    @MockBean
-    private ContaRepository contaRepositoryMock;
+	@MockBean
+	private ContaRepository contaRepositoryMock;
 
-    @MockBean
-    private UsuarioService usuarioServiceMock;
+	@MockBean
+	private UsuarioService usuarioServiceMock;
 
-    @BeforeEach
-    public void reset() {
-        umaTransacao.inicial();
-        umaConta.inicial();
-        // when(repositoryMock.findByLoginOrCpfEquals(any(String.class), any(String.class))).thenReturn(null);
-    }
+	@BeforeEach
+	public void reset() {
+		umaTransacao.inicial();
+		umaConta.inicial();
+		// when(repositoryMock.findByLoginOrCpfEquals(any(String.class),
+		// any(String.class))).thenReturn(null);
+	}
 
-    @Test
+	@Test
 	@Order(1)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação nula")
 	public void criandoTransacaoNula() {
-        Throwable exception = assertThrows(NullPointerException.class, () -> {
-            service.salvar(null);
-        });
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			service.salvar(null);
+		});
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Transação não pode ser nula";
-
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+		assertEquals(exception.getErrorCode(), ErrorCode.E0001);
 	}
 
-    @Test
+	@Test
 	@Order(2)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação sem conta origem")
 	public void criandoTransacaoSemContaOrigem() {
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            service.salvar(umaTransacao.build());
-        });
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			service.salvar(umaTransacao.buildDto());
+		});
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Conta origem não pode ser nula ou sem informar numero";
-
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+		assertEquals(exception.getErrorCode(), ErrorCode.E0002);
+		assertEquals(exception.getProperty(), "contaOrigem");
 	}
 
-    @Test
+	@Test
 	@Order(3)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação conta origem inexistente")
 	public void criandoTransacaoComContaOrigemInexistente() {
-        Conta conta = umaConta.build();
+		Conta conta = umaConta.build();
 
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.empty());
-        
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            Transacao transacao = umaTransacao.daConta(conta).build();
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.empty());
 
-            service.salvar(transacao);
-        });
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			TransacaoDTO transacao = umaTransacao.daConta(conta).buildDto();
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Conta origem informada não existe";
+			service.salvar(transacao);
+		});
 
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+		assertEquals(exception.getErrorCode(), ErrorCode.E0003);
+		assertEquals(exception.getProperty(), "contaOrigem");
 	}
 
-    @Test
+	@Test
 	@Order(4)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação com valor menor igual a zero")
 	public void criandoTransacaoComValorZero() {
-        Conta conta = umaConta.build();
-        
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
-        
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            Transacao transacao = umaTransacao.daConta(conta).build();
+		Conta conta = umaConta.build();
 
-            service.salvar(transacao);
-        });
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Valor precisa ser maior que zero";
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			TransacaoDTO transacao = umaTransacao.daConta(conta).buildDto();
 
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+			service.salvar(transacao);
+		});
+
+		assertEquals(exception.getErrorCode(), ErrorCode.E0004);
+		assertEquals(exception.getProperty(), "valor");
 	}
 
-    @Test
+	@Test
 	@Order(5)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação com plano de conta nulo")
 	public void criandoTransacaoComPlanoNulo() {
-        Conta conta = umaConta.build();
-        
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
-        
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            Transacao transacao = umaTransacao.comValor(10.0)
-                                            .comPlano(null)
-                                            .daConta(conta)
-                                            .build();
+		Conta conta = umaConta.build();
 
-            service.salvar(transacao);
-        });
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Plano de conta dever ser informado";
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			TransacaoDTO transacao = umaTransacao.comValor(10.0).comPlano(null).daConta(conta).buildDto();
 
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+			service.salvar(transacao);
+		});
+
+		assertEquals(exception.getErrorCode(), ErrorCode.E0002);
+		assertEquals(exception.getProperty(), "plano");
 	}
 
-    @Test
+	@Test
 	@Order(6)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação com plano de conta inválido")
 	public void criandoTransacaoComPlanoInvalido() {
-        Conta conta = umaConta.build();
-        
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
-        
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            Transacao transacao = umaTransacao.comValor(10.0)
-                                            .comPlano(umPlano.build())
-                                            .daConta(conta)
-                                            .build();
+		Conta conta = umaConta.build();
 
-            service.salvar(transacao);
-        });
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Valor do Tipo de Operação não é válido";
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			TransacaoDTO transacao = umaTransacao.comValor(10.0).comPlano(umPlano.build()).daConta(conta).buildDto();
 
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+			service.salvar(transacao);
+		});
+
+		assertEquals(exception.getErrorCode(), ErrorCode.E0002);
+		assertEquals(exception.getProperty(), "tipo");
 	}
 
-    @Test
+	@Test
 	@Order(7)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação com plano de conta não pertencente ao usuário")
 	public void criandoTransacaoComPlanoNaoPertencenteAoUsuario() {
-        Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
-        List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
-        
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
-        when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
-        
-        Throwable exception = assertThrows(DataRetrievalFailureException.class, () -> {
-            PlanoConta planoConta = umPlano.comId(1).comTipo(TipoOperacao.RECEITA).build();
+		Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
+		List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
 
-            Transacao transacao = umaTransacao.comValor(10.0)
-                                            .comPlano(planoConta)
-                                            .daConta(conta)
-                                            .build();
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
+		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
 
-            service.salvar(transacao);
-        });
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			PlanoConta planoConta = umPlano.comId(1).comTipo(TipoOperacao.RECEITA).build();
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Id informado não se refere a nenhum plano de conta do usuário da conta";
+			TransacaoDTO transacao = umaTransacao.comValor(10.0).comPlano(planoConta).daConta(conta).buildDto();
 
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+			service.salvar(transacao);
+		});
+
+		assertEquals(exception.getErrorCode(), ErrorCode.E0003);
+		assertEquals(exception.getProperty(), "tipo");
 	}
 
-    @Test
-	@Order(8)
-	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação com plano de conta com nome inválido")
-	public void criandoTransacaoComPlanoDeNomeInvalido() {
-        Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
-        PlanoConta planoConta = umPlano.comId(1)
-                                        .comNome("Luz")
-                                        .comTipo(TipoOperacao.DESPESA)
-                                        .build();
+	/*
+	 * @Test
+	 * 
+	 * @Order(8)
+	 * 
+	 * @DisplayName("Deve lançar uma exceção ao tentar fazer uma transação com plano de conta com nome inválido"
+	 * ) public void criandoTransacaoComPlanoDeNomeInvalido() { Conta conta =
+	 * umaConta.doUsuario(umUsuario.comId().build()).build(); PlanoConta planoConta
+	 * = umPlano.comId(1).comNome("Luz").comTipo(TipoOperacao.DESPESA).build();
+	 * 
+	 * List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
+	 * listaPlanos.add(umPlano.buildDto());
+	 * 
+	 * when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.
+	 * Optional.of(conta));
+	 * when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos)
+	 * .thenReturn(new ArrayList<PlanoContaDTO>());
+	 * 
+	 * Throwable exception = assertThrows(DataRetrievalFailureException.class, () ->
+	 * { TransacaoDTO transacao =
+	 * umaTransacao.comValor(-10.0).daConta(conta).comPlano(planoConta).buildDto();
+	 * 
+	 * service.salvar(transacao); });
+	 * 
+	 * String mensagemRecebida = exception.getMessage();
+	 * System.out.println(mensagemRecebida); String mensagemEsperada =
+	 * "Nome do Plano de conta não está cadastrado para o usuário";
+	 * 
+	 * assertTrue(mensagemRecebida.contains(mensagemEsperada)); }
+	 */
 
-        List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
-        listaPlanos.add(umPlano.buildDto());
-
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
-        when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos).thenReturn(new ArrayList<PlanoContaDTO>());
-        
-        Throwable exception = assertThrows(DataRetrievalFailureException.class, () -> {
-            Transacao transacao = umaTransacao.comValor(-10.0)
-                                            .daConta(conta)
-                                            .comPlano(planoConta)
-                                            .build();
-
-            service.salvar(transacao);
-        });
-
-        String mensagemRecebida = exception.getMessage();
-        System.out.println(mensagemRecebida);
-        String mensagemEsperada = "Nome do Plano de conta não está cadastrado para o usuário";
-
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
-	}
-
-    @Test
+	@Test
 	@Order(9)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação do tipo transferência com conta destino nula")
 	public void criandoTransacaoTransferenciaContaDestinoNula() {
-        Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
-        PlanoConta planoConta = umPlano.comId(1)
-                                        .comNome("PIX")
-                                        .comTipo(TipoOperacao.TRANSFERENCIA)
-                                        .build();
+		Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
+		PlanoConta planoConta = umPlano.comId(1).comNome("PIX").comTipo(TipoOperacao.TRANSFERENCIA).build();
 
-        List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
-        listaPlanos.add(umPlano.buildDto());
+		List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
+		listaPlanos.add(umPlano.buildDto());
 
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
-        when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
-        
-        Throwable exception = assertThrows(InvalidDataAccessApiUsageException.class, () -> {
-            Transacao transacao = umaTransacao.comValor(-10.0)
-                                            .daConta(conta)
-                                            .comPlano(planoConta)
-                                            .build();
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
+		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
 
-            service.salvar(transacao);
-        });
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			TransacaoDTO transacao = umaTransacao.comValor(-10.0).daConta(conta).comPlano(planoConta).buildDto();
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Para transação de TRANSFERENCIA. Conta destino não pode ser nula ou sem informar numero";
+			service.salvar(transacao);
+		});
 
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+		assertEquals(exception.getErrorCode(), ErrorCode.E0002);
+		assertEquals(exception.getProperty(), "contaDestino");
 	}
 
-    @Test
+	@Test
 	@Order(10)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação do tipo transferência com conta destino igual a conta origem")
 	public void criandoTransacaoTransferenciaContaDestinoIgualContaOrigem() {
-        Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
-        PlanoConta planoConta = umPlano.comId(1)
-                                        .comNome("PIX")
-                                        .comTipo(TipoOperacao.TRANSFERENCIA)
-                                        .build();
+		Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
+		PlanoConta planoConta = umPlano.comId(1).comNome("PIX").comTipo(TipoOperacao.TRANSFERENCIA).build();
 
-        List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
-        listaPlanos.add(umPlano.buildDto());
+		List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
+		listaPlanos.add(umPlano.buildDto());
 
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
-        when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
-        
-        Throwable exception = assertThrows(Exception.class, () -> {
-            Transacao transacao = umaTransacao.comValor(-10.0)
-                                            .daConta(conta)
-                                            .paraConta(conta)
-                                            .comPlano(planoConta)
-                                            .build();
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
+		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
 
-            service.salvar(transacao);
-        });
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			TransacaoDTO transacao = umaTransacao.comValor(-10.0).daConta(conta).paraConta(conta).comPlano(planoConta)
+					.buildDto();
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Para transferência Conta destino tem de ser diferente da conta de origem";
+			service.salvar(transacao);
+		});
 
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+		assertEquals(exception.getErrorCode(), ErrorCode.E0005);
 	}
 
-    @Test
+	@Test
 	@Order(11)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação do tipo transferência com conta destino não existente")
 	public void criandoTransacaoTransferenciaContaDestinoaoExistente() {
-        Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
-        PlanoConta planoConta = umPlano.comId(1)
-        .comNome("PIX")
-        .comTipo(TipoOperacao.TRANSFERENCIA)
-        .build();
-        
-        List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
-        listaPlanos.add(umPlano.buildDto());
-        
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta)).thenReturn(java.util.Optional.empty());
-        when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
-        
-        Throwable exception = assertThrows(DataRetrievalFailureException.class, () -> {
-            umaConta.inicial();
-            Conta contaDestino = umaConta.doUsuario(null).build();
-            
-            Transacao transacao = umaTransacao.comValor(-10.0)
-                                            .daConta(conta)
-                                            .paraConta(contaDestino)
-                                            .comPlano(planoConta)
-                                            .build();
+		Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
+		PlanoConta planoConta = umPlano.comId(1).comNome("PIX").comTipo(TipoOperacao.TRANSFERENCIA).build();
 
-            service.salvar(transacao);
-        });
+		List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
+		listaPlanos.add(umPlano.buildDto());
 
-        String mensagemRecebida = exception.getMessage();
-        String mensagemEsperada = "Conta destino informada não existe";
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta))
+				.thenReturn(java.util.Optional.empty());
+		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
 
-        assertTrue(mensagemRecebida.contains(mensagemEsperada));
+		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+			umaConta.inicial();
+			Conta contaDestino = umaConta.doUsuario(null).build();
+
+			TransacaoDTO transacao = umaTransacao.comValor(-10.0).daConta(conta).paraConta(contaDestino)
+					.comPlano(planoConta).buildDto();
+
+			service.salvar(transacao);
+		});
+
+		assertEquals(exception.getErrorCode(), ErrorCode.E0003);
+		assertEquals(exception.getProperty(), "contaDestino");
 	}
 
-    @Test
+	@Test
 	@Order(12)
 	@DisplayName("Deve retornar o id da transação em caso de sucesso")
 	public void criandoTransacaoValida() throws Exception {
-        Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
-        umaConta.inicial();
-        Conta contaDestino = umaConta.doUsuario(umUsuario.comId().build()).build();
-        PlanoConta planoConta = umPlano.comId(1)
-        .comNome("PIX")
-        .comTipo(TipoOperacao.TRANSFERENCIA)
-        .build();
-        
-        List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
-        listaPlanos.add(umPlano.buildDto());
-        
-        when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta)).thenReturn(java.util.Optional.of(contaDestino));
-        when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
-        
-        Transacao transacao = umaTransacao.comId(1)
-                                        .comValor(-10.0)
-                                        .daConta(conta)
-                                        .paraConta(contaDestino)
-                                        .comPlano(planoConta)
-                                        .build();
+		Conta conta = umaConta.doUsuario(umUsuario.comId().build()).build();
+		umaConta.inicial();
+		Conta contaDestino = umaConta.doUsuario(umUsuario.comId().build()).build();
+		PlanoConta planoConta = umPlano.comId(1).comNome("PIX").comTipo(TipoOperacao.TRANSFERENCIA).build();
 
-        when(repositoryMock.save(transacao)).thenReturn(transacao);
-    
-        Integer idRecebido = service.salvar(transacao);
-        Integer idEsperado = transacao.getId();
+		List<PlanoContaDTO> listaPlanos = new ArrayList<PlanoContaDTO>();
+		listaPlanos.add(umPlano.buildDto());
 
-        assertEquals(idEsperado, idRecebido);
+		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta))
+				.thenReturn(java.util.Optional.of(contaDestino));
+		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
+
+		Transacao transacao = umaTransacao.comId(1).comValor(-10.0).daConta(conta).paraConta(contaDestino)
+				.comPlano(planoConta).build();
+
+		when(repositoryMock.save(any(Transacao.class))).thenReturn(transacao);
+
+		Integer idRecebido = service.salvar(Mapper.convertTransacaoToDto(transacao));
+		Integer idEsperado = transacao.getId();
+
+		assertEquals(idEsperado, idRecebido);
 	}
 }

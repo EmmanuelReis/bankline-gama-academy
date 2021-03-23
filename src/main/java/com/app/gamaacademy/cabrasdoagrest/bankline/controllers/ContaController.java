@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.ExtratoDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.ContaService;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("api/conta")
 public class ContaController {
@@ -29,8 +33,13 @@ public class ContaController {
 	 * return ResponseEntity.ok().body(ret); }
 	 */
 
-	@GetMapping("/{numero}")
-	public ResponseEntity<ExtratoDTO> obterPorData(@PathVariable(value = "numero") Long numero,
+	@ApiOperation(value = "Retorna o extrato detalhado de todas as transações do cliente, ou por um período informado")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Retorna o extrato detalhado de todas as transações do cliente, ou por um período informado"),
+			@ApiResponse(code = 403, message = "Acesso não autorizado"),
+			@ApiResponse(code = 500, message = "Erro durante o processamento da requisição") })
+	@GetMapping(value = "/{numero}", produces = "application/json", consumes = "application/json")
+	public ResponseEntity<ExtratoDTO> extrato(@PathVariable(value = "numero") Long numero,
 			@RequestParam(value = "dtInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dtInicio,
 			@RequestParam(value = "dtFim", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dtFim)
 			throws Exception {
