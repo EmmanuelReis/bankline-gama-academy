@@ -10,7 +10,7 @@ public enum ErrorCode {
 	 */
 	E0001("Elemento não informado ou nulo"),
 	/**
-	 * Elemento não informado ou nulo
+	 * Propriedade obrigatória de objeto não informada ou nula
 	 */
 	E0002("Propriedade obrigatória de objeto não informada ou nula"),
 	/**
@@ -26,13 +26,17 @@ public enum ErrorCode {
 	 */
 	E0005("Para transferência Conta destino tem de ser diferente da conta de origem"),
 	/**
-	 * Valor do campo já cadastrado, não é permitido duplicados 
+	 * Valor do campo já cadastrado, não é permitido duplicados
 	 */
 	E0006("Valor do campo já cadastrado, não é permitido duplicados"),
 	/**
 	 * Valor do campo informado está fora do limite permitido
 	 */
-	E0007("Valor do campo informado está fora do limite permitido");
+	E0007("Valor do campo informado está fora do limite permitido"),
+	/**
+	 * Tamanho do campo informado está fora do limite permitido
+	 */
+	E0008("Tamanho do campo informado está fora do limite permitido");
 
 	private ErrorCode(String descricao) {
 		this.descricao = descricao;

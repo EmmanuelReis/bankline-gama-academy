@@ -165,15 +165,18 @@ public class TransacaoServiceImpl implements TransacaoService {
 		return result;
 	}
 
-	private PlanoConta obterPC(Integer idUsuario, Integer idPC, String nomePC) {
-		List<PlanoConta> listPC = new ArrayList<>();
-
-		usuarioService.obterPlanoContas(idUsuario).forEach(p -> listPC.add(Mapper.convertPlanoContaDtoToEntity(p)));
-
-		if (idPC > 0)
-			return listPC.stream().filter(x -> x.getId().equals(idPC)).findFirst().orElse(null);
-
-		return listPC.stream().filter(x -> x.getNome().equals(nomePC)).findFirst().orElse(null);
-	}
+	/*
+	 * private PlanoConta obterPC(Integer idUsuario, Integer idPC, String nomePC) {
+	 * List<PlanoConta> listPC = new ArrayList<>();
+	 * 
+	 * usuarioService.obterPlanoContas(idUsuario).forEach(p ->
+	 * listPC.add(Mapper.convertPlanoContaDtoToEntity(p)));
+	 * 
+	 * if (idPC > 0) return listPC.stream().filter(x ->
+	 * x.getId().equals(idPC)).findFirst().orElse(null);
+	 * 
+	 * return listPC.stream().filter(x ->
+	 * x.getNome().equals(nomePC)).findFirst().orElse(null); }
+	 */
 
 }

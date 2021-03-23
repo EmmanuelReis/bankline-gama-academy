@@ -23,7 +23,7 @@ public class UsuarioController {
 	private UsuarioService service;
 
 	@PostMapping
-	public ResponseEntity<Void> criar(@RequestBody UsuarioDTO usuario) {
+	public ResponseEntity<Void> criar(@RequestBody UsuarioDTO usuario) throws Exception {
 		Integer id = service.criarUsuario(usuario);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
 		return ResponseEntity.created(uri).build();

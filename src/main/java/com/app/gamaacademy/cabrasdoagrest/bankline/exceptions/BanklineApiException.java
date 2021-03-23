@@ -59,10 +59,13 @@ public class BanklineApiException extends ResponseStatusException {
 			sb.append(String.format(" Objeto: %s, campo: %s, valor: %s.", this.object, this.property, this.value));
 			break;
 		case E0007:
-			// Objeto: x, campo: y, valor: z. Precisar ser %Operador% %limiteInferior% entre
+		case E0008:
+			// Objeto: x, campo: y, (valor|tamanho): z. Precisar ser %Operador%
+			// %limiteInferior% entre
 			// %operador% %limiteSuperior%
-			sb.append(String.format(" Objeto: %s, campo: %s, valor: %s. Precisa ser %s %s e %s %s", this.object,
-					this.property, this.value, this.args[0], this.args[1], this.args[2], this.args[3]));
+			sb.append(String.format(" Objeto: %s, campo: %s, %s: %s. Precisa ser %s %s e %s %s", this.object,
+					this.property, this.errorCode.equals(ErrorCode.E0007) ? "valor" : "tamanho", this.value,
+					this.args[0], this.args[1], this.args[2], this.args[3]));
 			break;
 		default:
 			break;

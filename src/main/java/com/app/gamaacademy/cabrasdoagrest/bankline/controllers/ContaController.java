@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.ExtratoDTO;
-import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineApiException;
 import com.app.gamaacademy.cabrasdoagrest.bankline.service.ContaService;
 
 import io.swagger.annotations.ApiOperation;

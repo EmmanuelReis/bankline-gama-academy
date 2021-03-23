@@ -150,7 +150,7 @@ public class UsuarioServiceTest {
 	@Test
 	@Order(6)
 	@DisplayName("Deve retornar um id ao criar um usuário")
-	public void criandoUsuario() {
+	public void criandoUsuario() throws Exception {
 		Usuario usuario = umUsuario.comId().build();
 		UsuarioDTO usuarioDTO = umUsuario.comId().buildDto();
 
