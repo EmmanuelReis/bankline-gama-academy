@@ -52,33 +52,6 @@ public class ContaServiceImpl implements ContaService {
 	}
 
 	@Override
-	public Long salvar(Conta conta) {
-		return contaRepo.save(conta).getNumero();
-	}
-
-	@Override
-	public Conta obter(Long numero) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Conta obterContaDeUsuario(Integer idUsuario) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ExtratoDTO extrato(Long numero) throws Exception {
-		return extrato(numero, null, null);
-	}
-
-	@Override
-	public ExtratoDTO extrato(Long numero, LocalDate dtInicio) throws Exception {
-		return extrato(numero, dtInicio, null);
-	}
-
-	@Override
 	public ExtratoDTO extrato(Long numero, LocalDate dtInicio, LocalDate dtFim) throws Exception {
 		ExtratoDTO ret = new ExtratoDTO();
 
@@ -100,9 +73,9 @@ public class ContaServiceImpl implements ContaService {
 		transacoes.forEach(t -> ret.getTransacoes().add(Mapper.convertTransacaoToDto(t)));
 
 		transacoes.sort((d1, d2) -> d1.getData().compareTo(d2.getData()));
-		ret.setInicio(
+		ret.setDtInicio(
 				dtInicio != null ? dtInicio : !transacoes.isEmpty() ? transacoes.get(0).getData().toLocalDate() : null);
-		ret.setFim(dtFim != null ? dtFim
+		ret.setDtFim(dtFim != null ? dtFim
 				: !transacoes.isEmpty() ? transacoes.get(transacoes.size() - 1).getData().toLocalDate() : null);
 		ret.setSaldoAtual(conta.getSaldo());
 		ret.setSaldoPeriodo(transacoes.stream().mapToDouble(p -> p.getValor()).reduce(0, (s, e) -> s + e));

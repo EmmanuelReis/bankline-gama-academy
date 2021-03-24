@@ -3,13 +3,11 @@ package com.app.gamaacademy.cabrasdoagrest.bankline.models;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import com.app.gamaacademy.cabrasdoagrest.bankline.listeners.UsuarioListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -22,7 +20,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@EntityListeners(UsuarioListener.class)
 public class Usuario {
 
 	public final static int LOGIN_MAX_LENGTH = 20;

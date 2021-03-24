@@ -10,6 +10,6 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Integer> {
 
 	public Usuario findByLoginEquals(String login);
 
-	public Usuario findByLoginOrCpfEquals(String login, String cpf);
+	public Usuario findByCpfEquals(String cpf);
 
 }
