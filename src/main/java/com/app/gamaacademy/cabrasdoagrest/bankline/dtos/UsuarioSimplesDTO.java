@@ -9,10 +9,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContaDTO {
+public class UsuarioSimplesDTO {
 
-	private Long numero;
-	private Double saldo;
-	private UsuarioSimplesDTO usuario;
+	private Integer id;
+	private String login;
+	private String cpf;
+	private String senha;
+	private String nome;
 
 }

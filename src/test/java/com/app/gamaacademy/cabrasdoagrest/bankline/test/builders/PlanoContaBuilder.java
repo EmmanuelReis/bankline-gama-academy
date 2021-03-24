@@ -44,6 +44,6 @@ public class PlanoContaBuilder {
     }
 
     public PlanoContaDTO buildDto() {
-        return Mapper.convertPlanoContaToDto(build());
+        return Mapper.convertPlanoContaEntityToDto(build());
     }
 }

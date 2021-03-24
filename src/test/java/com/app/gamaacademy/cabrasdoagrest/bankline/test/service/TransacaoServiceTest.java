@@ -21,7 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.TransacaoDTO;
-import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineApiException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineBusinessException;
 import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
@@ -77,7 +77,7 @@ public class TransacaoServiceTest {
 	@Order(1)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação nula")
 	public void criandoTransacaoNula() {
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			service.salvar(null);
 		});
 
@@ -88,7 +88,7 @@ public class TransacaoServiceTest {
 	@Order(2)
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação sem conta origem")
 	public void criandoTransacaoSemContaOrigem() {
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			service.salvar(umaTransacao.buildDto());
 		});
 
@@ -104,7 +104,7 @@ public class TransacaoServiceTest {
 
 		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.empty());
 
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			TransacaoDTO transacao = umaTransacao.daConta(conta).buildDto();
 
 			service.salvar(transacao);
@@ -122,7 +122,7 @@ public class TransacaoServiceTest {
 
 		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			TransacaoDTO transacao = umaTransacao.daConta(conta).buildDto();
 
 			service.salvar(transacao);
@@ -140,7 +140,7 @@ public class TransacaoServiceTest {
 
 		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			TransacaoDTO transacao = umaTransacao.comValor(10.0).comPlano(null).daConta(conta).buildDto();
 
 			service.salvar(transacao);
@@ -158,7 +158,7 @@ public class TransacaoServiceTest {
 
 		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			TransacaoDTO transacao = umaTransacao.comValor(10.0).comPlano(umPlano.build()).daConta(conta).buildDto();
 
 			service.salvar(transacao);
@@ -178,7 +178,7 @@ public class TransacaoServiceTest {
 		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
 
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			PlanoConta planoConta = umPlano.comId(1).comTipo(TipoOperacao.RECEITA).build();
 
 			TransacaoDTO transacao = umaTransacao.comValor(10.0).comPlano(planoConta).daConta(conta).buildDto();
@@ -234,7 +234,7 @@ public class TransacaoServiceTest {
 		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
 
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			TransacaoDTO transacao = umaTransacao.comValor(-10.0).daConta(conta).comPlano(planoConta).buildDto();
 
 			service.salvar(transacao);
@@ -257,7 +257,7 @@ public class TransacaoServiceTest {
 		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.of(conta));
 		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
 
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			TransacaoDTO transacao = umaTransacao.comValor(-10.0).daConta(conta).paraConta(conta).comPlano(planoConta)
 					.buildDto();
 
@@ -281,7 +281,7 @@ public class TransacaoServiceTest {
 				.thenReturn(java.util.Optional.empty());
 		when(usuarioServiceMock.obterPlanoContas(anyInt())).thenReturn(listaPlanos);
 
-		BanklineApiException exception = assertThrows(BanklineApiException.class, () -> {
+		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
 			umaConta.inicial();
 			Conta contaDestino = umaConta.doUsuario(null).build();
 
@@ -316,7 +316,7 @@ public class TransacaoServiceTest {
 
 		when(repositoryMock.save(any(Transacao.class))).thenReturn(transacao);
 
-		Integer idRecebido = service.salvar(Mapper.convertTransacaoToDto(transacao));
+		Integer idRecebido = service.salvar(Mapper.convertTransacaoEntityToDto(transacao));
 		Integer idEsperado = transacao.getId();
 
 		assertEquals(idEsperado, idRecebido);

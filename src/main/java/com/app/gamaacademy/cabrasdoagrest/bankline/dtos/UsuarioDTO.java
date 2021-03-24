@@ -11,14 +11,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsuarioDTO {
+public class UsuarioDTO extends UsuarioSimplesDTO {
 
-	private Integer id;
-	private String login;
-	private String cpf;
-	private String senha;
-	private String nome;
 	private ContaDTO conta;
 	private List<PlanoContaDTO> planos;
+
+	public UsuarioDTO(UsuarioSimplesDTO simples) {
+		super(simples.getId(), simples.getLogin(), simples.getCpf(), simples.getSenha(), simples.getNome());
+	}
 
 }

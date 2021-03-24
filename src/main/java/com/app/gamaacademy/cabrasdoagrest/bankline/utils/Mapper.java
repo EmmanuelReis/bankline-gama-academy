@@ -4,6 +4,7 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.ContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.TransacaoDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioSimplesDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Transacao;
@@ -11,7 +12,7 @@ import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 
 public class Mapper {
 
-	public static ContaDTO convertContaToDto(Conta entity) {
+	public static ContaDTO convertContaEntityToDto(Conta entity) {
 		if (entity == null)
 			return null;
 
@@ -33,7 +34,7 @@ public class Mapper {
 		return entity;
 	}
 
-	public static PlanoContaDTO convertPlanoContaToDto(PlanoConta entity) {
+	public static PlanoContaDTO convertPlanoContaEntityToDto(PlanoConta entity) {
 		if (entity == null)
 			return null;
 
@@ -57,16 +58,16 @@ public class Mapper {
 		return entity;
 	}
 
-	public static TransacaoDTO convertTransacaoToDto(Transacao entity) {
+	public static TransacaoDTO convertTransacaoEntityToDto(Transacao entity) {
 		if (entity == null)
 			return null;
 
 		TransacaoDTO dto = new TransacaoDTO();
-		dto.setContaDestino(convertContaToDto(entity.getContaDestino()));
-		dto.setContaOrigem(convertContaToDto(entity.getContaOrigem()));
+		dto.setContaDestino(convertContaEntityToDto(entity.getContaDestino()));
+		dto.setContaOrigem(convertContaEntityToDto(entity.getContaOrigem()));
 		dto.setData(entity.getData());
 		dto.setId(entity.getId());
-		dto.setPlanoConta(convertPlanoContaToDto(entity.getPlanoConta()));
+		dto.setPlanoConta(convertPlanoContaEntityToDto(entity.getPlanoConta()));
 		dto.setValor(entity.getValor());
 
 		return dto;
@@ -87,12 +88,21 @@ public class Mapper {
 		return entity;
 	}
 
-	public static UsuarioDTO convertUsuarioToDto(Usuario entity) {
+	public static UsuarioDTO convertUsuarioEntityToDto(Usuario entity) {
 		if (entity == null)
 			return null;
 
-		UsuarioDTO dto = new UsuarioDTO();
-		dto.setConta(convertContaToDto(entity.getConta()));
+		UsuarioDTO dto = new UsuarioDTO(convertUsuarioEntityToUsuarioSimplesDto(entity));
+		dto.setConta(convertContaEntityToDto(entity.getConta()));
+
+		return dto;
+	}
+
+	public static UsuarioSimplesDTO convertUsuarioEntityToUsuarioSimplesDto(Usuario entity) {
+		if (entity == null)
+			return null;
+
+		UsuarioSimplesDTO dto = new UsuarioSimplesDTO();
 		dto.setCpf(entity.getCpf());
 		dto.setId(entity.getId());
 		dto.setLogin(entity.getLogin());
