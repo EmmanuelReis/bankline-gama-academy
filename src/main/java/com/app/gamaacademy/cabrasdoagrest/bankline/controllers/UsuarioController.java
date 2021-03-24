@@ -42,7 +42,7 @@ public class UsuarioController {
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<UsuarioDTO> obter(@PathVariable(value = "id") Integer id) {
 		UsuarioDTO ret = service.encontrarUsuario(id);
-		if (ret != null) {
+		if (ret == null) {
 			return ResponseEntity.notFound().build();
 		}
 
