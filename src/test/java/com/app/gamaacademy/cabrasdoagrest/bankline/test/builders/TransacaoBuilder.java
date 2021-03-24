@@ -63,6 +63,6 @@ public class TransacaoBuilder {
 	}
 
 	public TransacaoDTO buildDto() {
-		return Mapper.convertTransacaoToDto(build());
+		return Mapper.convertTransacaoEntityToDto(build());
 	}
 }

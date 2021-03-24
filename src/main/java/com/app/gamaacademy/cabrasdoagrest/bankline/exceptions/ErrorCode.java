@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum ErrorCode {
 
 	/**
-	 * Elemento Raiz nulo
+	 * Elemento não informado ou nulo
 	 */
 	E0001("Elemento não informado ou nulo"),
 	/**
@@ -36,12 +36,15 @@ public enum ErrorCode {
 	/**
 	 * Tamanho do campo informado está fora do limite permitido
 	 */
-	E0008("Tamanho do campo informado está fora do limite permitido");
+	E0008("Tamanho do campo informado está fora do limite permitido"),
+	/**
+	 * Não foi possível encontrar o elemento raiz com o id fornecido
+	 */
+	E0009("Não foi possível encontrar o elemento raiz com o id fornecido"),;
 
 	private ErrorCode(String descricao) {
 		this.descricao = descricao;
 	}
 
 	private String descricao;
-
 }

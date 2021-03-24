@@ -5,13 +5,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.TransacaoDTO;
-import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineApiException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineBusinessException;
 import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
@@ -35,7 +33,7 @@ public class TransacaoServiceImpl implements TransacaoService {
 	private UsuarioService usuarioService;
 
 	@Override
-	public Integer salvar(TransacaoDTO dto) throws Exception {
+	public Integer salvar(TransacaoDTO dto) throws BanklineBusinessException {
 
 		Transacao transDest = null;
 
@@ -81,38 +79,38 @@ public class TransacaoServiceImpl implements TransacaoService {
 		return entity.getId();
 	}
 
-	private void validar(TransacaoDTO entity)
-			throws DataRetrievalFailureException, InvalidDataAccessApiUsageException, Exception {
+	private void validar(TransacaoDTO entity) throws BanklineBusinessException {
 		if (entity == null)
-			throw new BanklineApiException(ErrorCode.E0001, "transacao", null, null);
+			throw new BanklineBusinessException(ErrorCode.E0001, "transacao", null, null);
 
 		if (entity.getContaOrigem() == null)
-			throw new BanklineApiException(ErrorCode.E0002, "transacao", "contaOrigem", null);
+			throw new BanklineBusinessException(ErrorCode.E0002, "transacao", "contaOrigem", null);
 		if (entity.getContaOrigem().getNumero() <= 0)
-			throw new BanklineApiException(ErrorCode.E0004, "transacao", "contaOrigem",
+			throw new BanklineBusinessException(ErrorCode.E0004, "transacao", "contaOrigem",
 					entity.getContaOrigem().getNumero().toString());
 
 		Conta contaOrigem = contaRepo.findById(entity.getContaOrigem().getNumero()).orElse(null);
 
 		if (contaOrigem == null)
-			throw new BanklineApiException(ErrorCode.E0003, "transacao", "contaOrigem",
+			throw new BanklineBusinessException(ErrorCode.E0003, "transacao", "contaOrigem",
 					entity.getContaOrigem().getNumero().toString());
 
 		if (entity.getValor() <= 0)
-			throw new BanklineApiException(ErrorCode.E0004, "transacao", "valor", entity.getValor().toString());
+			throw new BanklineBusinessException(ErrorCode.E0004, "transacao", "valor", entity.getValor().toString());
 
 		Usuario usuario = contaOrigem.getUsuario();
 		PlanoContaDTO plano = entity.getPlanoConta();
 
 		if (plano == null)
-			throw new BanklineApiException(ErrorCode.E0002, "transacao", "plano", null);
+			throw new BanklineBusinessException(ErrorCode.E0002, "transacao", "plano", null);
 		else if (plano.getTipo() == null)
-			throw new BanklineApiException(ErrorCode.E0002, "plano", "tipo", null);
+			throw new BanklineBusinessException(ErrorCode.E0002, "plano", "tipo", null);
 		else if (plano.getTipo().getCodigo() == null)
-			throw new BanklineApiException(ErrorCode.E0004, "transacao", "tipo", plano.getTipo().name());
+			throw new BanklineBusinessException(ErrorCode.E0004, "transacao", "tipo", plano.getTipo().name());
 		else if (plano.getId() > 0 && usuarioService.obterPlanoContas(usuario.getId()).stream()
 				.filter(x -> x.getId() == plano.getId()).findFirst().orElse(null) == null)
-			throw new BanklineApiException(ErrorCode.E0003, "plano", "tipo", entity.getPlanoConta().getId().toString());
+			throw new BanklineBusinessException(ErrorCode.E0003, "plano", "tipo",
+					entity.getPlanoConta().getId().toString());
 		/*
 		 * else if (StringUtils.isNotBlank(plano.getNome()) && obterPC(usuario.getId(),
 		 * 0, plano.getNome()) == null) { throw new
@@ -122,23 +120,23 @@ public class TransacaoServiceImpl implements TransacaoService {
 
 		if (entity.getPlanoConta().getTipo().equals(TipoOperacao.TRANSFERENCIA)) {
 			if (entity.getContaDestino() == null)
-				throw new BanklineApiException(ErrorCode.E0002, "transacao", "contaDestino", null);
+				throw new BanklineBusinessException(ErrorCode.E0002, "transacao", "contaDestino", null);
 			if (entity.getContaDestino().getNumero() <= 0)
-				throw new BanklineApiException(ErrorCode.E0004, "transacao", "contaOrigem",
+				throw new BanklineBusinessException(ErrorCode.E0004, "transacao", "contaOrigem",
 						entity.getContaDestino().getNumero().toString());
 
 			if (entity.getContaDestino().getNumero().equals(entity.getContaOrigem().getNumero()))
-				throw new BanklineApiException(ErrorCode.E0005);
+				throw new BanklineBusinessException(ErrorCode.E0005);
 
 			if (contaRepo.findById(entity.getContaDestino().getNumero()).orElse(null) == null)
-				throw new BanklineApiException(ErrorCode.E0003, "transacao", "contaDestino",
+				throw new BanklineBusinessException(ErrorCode.E0003, "transacao", "contaDestino",
 						entity.getContaDestino().getNumero().toString());
 		}
 	}
 
 	@Override
 	public TransacaoDTO obter(Integer id) {
-		return Mapper.convertTransacaoToDto(transRepo.findById(id).orElse(null));
+		return Mapper.convertTransacaoEntityToDto(transRepo.findById(id).orElse(null));
 	}
 
 	@Override

@@ -9,7 +9,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.ContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.ExtratoDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineBusinessException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
@@ -52,13 +55,13 @@ public class ContaServiceImpl implements ContaService {
 	}
 
 	@Override
-	public ExtratoDTO extrato(Long numero, LocalDate dtInicio, LocalDate dtFim) throws Exception {
+	public ExtratoDTO extrato(Long numero, LocalDate dtInicio, LocalDate dtFim) throws BanklineBusinessException {
 		ExtratoDTO ret = new ExtratoDTO();
 
-		Conta conta = contaRepo.findById(numero).get();
+		Conta conta = contaRepo.findById(numero).orElse(null);
 
 		if (conta == null)
-			throw new Exception("Conta não exite");
+			throw new BanklineBusinessException(ErrorCode.E0009, "Conta", "numero", numero.toString());
 
 		List<Transacao> transacoes = null;
 
@@ -70,7 +73,7 @@ public class ContaServiceImpl implements ContaService {
 
 		transacoes = transRepo.obterExtrato(numero, dtInicioFormated, dtFimFormated);
 
-		transacoes.forEach(t -> ret.getTransacoes().add(Mapper.convertTransacaoToDto(t)));
+		transacoes.forEach(t -> ret.getTransacoes().add(Mapper.convertTransacaoEntityToDto(t)));
 
 		transacoes.sort((d1, d2) -> d1.getData().compareTo(d2.getData()));
 		ret.setDtInicio(
@@ -80,6 +83,16 @@ public class ContaServiceImpl implements ContaService {
 		ret.setSaldoAtual(conta.getSaldo());
 		ret.setSaldoPeriodo(transacoes.stream().mapToDouble(p -> p.getValor()).reduce(0, (s, e) -> s + e));
 
+		return ret;
+	}
+
+	@Override
+	public ContaDTO obter(Long numero) {
+		Conta entity = contaRepo.findById(numero).orElse(null);
+		if (entity == null)
+			return null;
+		ContaDTO ret = Mapper.convertContaEntityToDto(entity);
+		ret.setUsuario(Mapper.convertUsuarioEntityToUsuarioSimplesDto(entity.getUsuario()));
 		return ret;
 	}
 
