@@ -1,7 +1,7 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +50,7 @@ public class ContaServiceImpl implements ContaService {
 		Arrays.asList(TipoOperacao.values()).forEach(t -> planoList.add(new PlanoConta(0, t.name(), t, usuario)));
 
 		planoRepo.saveAll(planoList);
-		
+
 		conta.setUsuario(userRepo.save(usuario));
 
 		Long numero = contaRepo.save(conta).getNumero();
@@ -68,13 +68,13 @@ public class ContaServiceImpl implements ContaService {
 
 		List<Transacao> transacoes = null;
 
-		String dtInicioFormated = dtInicio != null
-				? dtInicio.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-				: LocalDate.MIN.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-		String dtFimFormated = dtFim != null ? dtFim.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-				: LocalDate.now().atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		LocalDateTime dtInicioFormated = dtInicio != null
+				? dtInicio.atStartOfDay()
+				: LocalDate.of(2021, 1, 1).atStartOfDay();
+		LocalDateTime dtFimFormated = dtFim != null ? dtFim.atTime(23, 59, 59)
+				: LocalDate.now().atTime(23, 59, 59);
 
-		transacoes = transRepo.obterExtrato(numero, dtInicioFormated, dtFimFormated);
+		transacoes = transRepo.findByContaOrigemNumeroEqualsAndDataBetween(numero, dtInicioFormated, dtFimFormated);
 
 		transacoes.forEach(t -> ret.getTransacoes().add(Mapper.convertTransacaoEntityToDto(t)));
 
