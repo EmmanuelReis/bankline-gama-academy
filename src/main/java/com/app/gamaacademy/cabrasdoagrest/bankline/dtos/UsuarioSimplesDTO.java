@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UsuarioSimplesDTO {
 
-	private Integer id;
+	private Integer id = 0;
 	private String login;
 	private String cpf;	
 	private String nome;

@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ContaDTO {
 
-	private Long numero;
-	private Double saldo;
+	private Long numero = 0L;
+	private Double saldo = 0.0;
 	private UsuarioSimplesDTO usuario;
 
 }
