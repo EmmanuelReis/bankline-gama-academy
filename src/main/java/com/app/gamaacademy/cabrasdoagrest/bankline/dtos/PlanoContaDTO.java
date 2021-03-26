@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PlanoContaDTO {
 
-	private Integer id;
+	private Integer id = 0;
 	private String nome;
 	private TipoOperacao tipo;
 
