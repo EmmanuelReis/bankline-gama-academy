@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.PlanoContaDTO;
@@ -34,11 +35,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Autowired
 	private ContaService contaService;
 
+	@Autowired
+	private PasswordEncoder encoder;
+
 	@Override
 	public Integer criarUsuario(UsuarioDTO usuario) throws Exception {
 		validar(usuario);
 
 		Usuario entity = Mapper.convertUsuarioDtoToEntity(usuario);
+
+		entity.setSenha(encoder.encode(entity.getSenha()));
 
 		Integer id = repository.save(entity).getId();
 		contaService.criar(id);
@@ -152,6 +158,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 		});
 
 		return map;
+	}
+
+	@Override
+	public UsuarioDTO encontrarPorLogin(String login) {
+		return Mapper.convertUsuarioEntityToDto(repository.findByLoginEquals(login));
 	}
 
 }

@@ -94,6 +94,7 @@ public class Mapper {
 
 		UsuarioDTO dto = new UsuarioDTO(convertUsuarioEntityToUsuarioSimplesDto(entity));
 		dto.setConta(convertContaEntityToDto(entity.getConta()));
+		dto.setSenha(entity.getSenha());
 
 		return dto;
 	}
@@ -107,7 +108,6 @@ public class Mapper {
 		dto.setId(entity.getId());
 		dto.setLogin(entity.getLogin());
 		dto.setNome(entity.getNome());
-		dto.setSenha(entity.getSenha());
 
 		return dto;
 	}

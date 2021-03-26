@@ -14,7 +14,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineBusinessException;
@@ -139,7 +138,8 @@ public class UsuarioServiceTest {
 	public void criandoUsuarioComLoginExistente() {
 		UsuarioDTO usuarioDTO = umUsuario.buildDto();
 
-		//String mensagemEsperada = "CPF e/ou login já existe não é possível cadastrar!";
+		// String mensagemEsperada = "CPF e/ou login já existe não é possível
+		// cadastrar!";
 
 		when(repositoryMock.findByLoginEquals(any(String.class))).thenReturn(umUsuario.build());
 
