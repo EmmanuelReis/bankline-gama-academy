@@ -13,8 +13,7 @@ public class UsuarioSimplesDTO {
 
 	private Integer id;
 	private String login;
-	private String cpf;
-	private String senha;
+	private String cpf;	
 	private String nome;
 
 }

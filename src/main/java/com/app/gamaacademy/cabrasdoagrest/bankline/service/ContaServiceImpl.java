@@ -42,16 +42,19 @@ public class ContaServiceImpl implements ContaService {
 	@Override
 	public Long criar(Integer idUsuario) {
 		Conta conta = new Conta();
-		Usuario user = userRepo.findById(idUsuario).orElse(null);
+		Usuario usuario = userRepo.findById(idUsuario).orElse(null);
 		List<PlanoConta> planoList = new ArrayList<>();
 
-		conta.setUsuario(user);
+		conta.setUsuario(usuario);
 
-		Arrays.asList(TipoOperacao.values()).forEach(t -> planoList.add(new PlanoConta(0, t.name(), t, user)));
+		Arrays.asList(TipoOperacao.values()).forEach(t -> planoList.add(new PlanoConta(0, t.name(), t, usuario)));
 
 		planoRepo.saveAll(planoList);
+		
+		conta.setUsuario(userRepo.save(usuario));
 
-		return contaRepo.save(conta).getNumero();
+		Long numero = contaRepo.save(conta).getNumero();
+		return numero;
 	}
 
 	@Override

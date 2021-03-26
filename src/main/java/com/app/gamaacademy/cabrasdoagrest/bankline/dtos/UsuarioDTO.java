@@ -15,9 +15,10 @@ public class UsuarioDTO extends UsuarioSimplesDTO {
 
 	private ContaDTO conta;
 	private List<PlanoContaDTO> planos;
+	private String senha;
 
 	public UsuarioDTO(UsuarioSimplesDTO simples) {
-		super(simples.getId(), simples.getLogin(), simples.getCpf(), simples.getSenha(), simples.getNome());
+		super(simples.getId(), simples.getLogin(), simples.getCpf(), simples.getNome());
 	}
 
 }

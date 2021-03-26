@@ -16,6 +16,8 @@ public interface UsuarioService {
 	public UsuarioDTO encontrarUsuario(Integer id);
 
 	public Usuario encontrarUsuarioDB(Integer id);
+	
+	public UsuarioDTO encontrarPorLogin(String login);
 
 	public List<PlanoContaDTO> obterPlanoContas(int id);
 }
