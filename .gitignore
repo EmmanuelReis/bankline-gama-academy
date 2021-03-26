@@ -10,3 +10,4 @@ bin/
 # Package Files #
 *.jar
 hs_err_pid*
+/replay_pid21816.log
