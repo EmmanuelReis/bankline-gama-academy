@@ -89,7 +89,7 @@ public class TransacaoServiceTest {
 	@DisplayName("Deve lançar uma exceção ao tentar fazer uma transação sem conta origem")
 	public void criandoTransacaoSemContaOrigem() {
 		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
-			service.salvar(umaTransacao.buildDto());
+			service.salvar(umaTransacao.comValor(10.0).buildDto());
 		});
 
 		assertEquals(exception.getErrorCode(), ErrorCode.E0002);
@@ -105,7 +105,7 @@ public class TransacaoServiceTest {
 		when(contaRepositoryMock.findById(any(Long.class))).thenReturn(java.util.Optional.empty());
 
 		BanklineBusinessException exception = assertThrows(BanklineBusinessException.class, () -> {
-			TransacaoDTO transacao = umaTransacao.daConta(conta).buildDto();
+			TransacaoDTO transacao = umaTransacao.daConta(conta).comValor(10.0).buildDto();
 
 			service.salvar(transacao);
 		});
