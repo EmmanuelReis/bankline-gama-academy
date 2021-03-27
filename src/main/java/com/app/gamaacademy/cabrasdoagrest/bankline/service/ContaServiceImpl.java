@@ -1,7 +1,7 @@
 package com.app.gamaacademy.cabrasdoagrest.bankline.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +9,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.ContaDTO;
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.ExtratoDTO;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineBusinessException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Conta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.PlanoConta;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.TipoOperacao;
@@ -39,38 +42,41 @@ public class ContaServiceImpl implements ContaService {
 	@Override
 	public Long criar(Integer idUsuario) {
 		Conta conta = new Conta();
-		Usuario user = userRepo.findById(idUsuario).orElse(null);
+		Usuario usuario = userRepo.findById(idUsuario).orElse(null);
 		List<PlanoConta> planoList = new ArrayList<>();
 
-		conta.setUsuario(user);
+		conta.setUsuario(usuario);
 
-		Arrays.asList(TipoOperacao.values()).forEach(t -> planoList.add(new PlanoConta(0, t.name(), t, user)));
+		Arrays.asList(TipoOperacao.values()).forEach(t -> planoList.add(new PlanoConta(0, t.name(), t, usuario)));
 
 		planoRepo.saveAll(planoList);
 
-		return contaRepo.save(conta).getNumero();
+		conta.setUsuario(userRepo.save(usuario));
+
+		Long numero = contaRepo.save(conta).getNumero();
+		return numero;
 	}
 
 	@Override
-	public ExtratoDTO extrato(Long numero, LocalDate dtInicio, LocalDate dtFim) throws Exception {
+	public ExtratoDTO extrato(Long numero, LocalDate dtInicio, LocalDate dtFim) throws BanklineBusinessException {
 		ExtratoDTO ret = new ExtratoDTO();
 
-		Conta conta = contaRepo.findById(numero).get();
+		Conta conta = contaRepo.findById(numero).orElse(null);
 
 		if (conta == null)
-			throw new Exception("Conta não exite");
+			throw new BanklineBusinessException(ErrorCode.E0009, "Conta", "numero", numero.toString());
 
 		List<Transacao> transacoes = null;
 
-		String dtInicioFormated = dtInicio != null
-				? dtInicio.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-				: LocalDate.MIN.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-		String dtFimFormated = dtFim != null ? dtFim.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-				: LocalDate.now().atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		LocalDateTime dtInicioFormated = dtInicio != null
+				? dtInicio.atStartOfDay()
+				: LocalDate.of(2021, 1, 1).atStartOfDay();
+		LocalDateTime dtFimFormated = dtFim != null ? dtFim.atTime(23, 59, 59)
+				: LocalDate.now().atTime(23, 59, 59);
 
-		transacoes = transRepo.obterExtrato(numero, dtInicioFormated, dtFimFormated);
+		transacoes = transRepo.findByContaOrigemNumeroEqualsAndDataBetween(numero, dtInicioFormated, dtFimFormated);
 
-		transacoes.forEach(t -> ret.getTransacoes().add(Mapper.convertTransacaoToDto(t)));
+		transacoes.forEach(t -> ret.getTransacoes().add(Mapper.convertTransacaoEntityToDto(t)));
 
 		transacoes.sort((d1, d2) -> d1.getData().compareTo(d2.getData()));
 		ret.setDtInicio(
@@ -80,6 +86,16 @@ public class ContaServiceImpl implements ContaService {
 		ret.setSaldoAtual(conta.getSaldo());
 		ret.setSaldoPeriodo(transacoes.stream().mapToDouble(p -> p.getValor()).reduce(0, (s, e) -> s + e));
 
+		return ret;
+	}
+
+	@Override
+	public ContaDTO obter(Long numero) {
+		Conta entity = contaRepo.findById(numero).orElse(null);
+		if (entity == null)
+			return null;
+		ContaDTO ret = Mapper.convertContaEntityToDto(entity);
+		ret.setUsuario(Mapper.convertUsuarioEntityToUsuarioSimplesDto(entity.getUsuario()));
 		return ret;
 	}
 

@@ -10,7 +10,7 @@ import lombok.Setter;
 @SuppressWarnings("serial")
 @Getter
 @Setter
-public class BanklineApiException extends ResponseStatusException {
+public class BanklineBusinessException extends ResponseStatusException {
 
 	private String mensagem;
 	private String object;
@@ -19,24 +19,24 @@ public class BanklineApiException extends ResponseStatusException {
 	private String[] args;
 	private ErrorCode errorCode;
 
-	public BanklineApiException(ErrorCode errorCode) {
+	public BanklineBusinessException(ErrorCode errorCode) {
 		super(HttpStatus.BAD_REQUEST);
 		this.errorCode = errorCode;
 	}
 
-	public BanklineApiException(ErrorCode errorCode, String mensagem) {
+	public BanklineBusinessException(ErrorCode errorCode, String mensagem) {
 		this(errorCode);
 		this.mensagem = mensagem;
 	}
 
-	public BanklineApiException(ErrorCode errorCode, String object, String property, String value) {
+	public BanklineBusinessException(ErrorCode errorCode, String object, String property, String value) {
 		this(errorCode, "");
 		this.object = object;
 		this.property = property;
 		this.value = value;
 	}
 
-	public BanklineApiException(ErrorCode errorCode, String object, String property, String value, String... args)
+	public BanklineBusinessException(ErrorCode errorCode, String object, String property, String value, String... args)
 			throws Exception {
 		this(errorCode, object, property, value);
 		if (errorCode.equals(ErrorCode.E0007) && args.length < 4)
@@ -63,6 +63,8 @@ public class BanklineApiException extends ResponseStatusException {
 			break;
 		case E0003:
 		case E0004:
+		case E0006:
+		case E0009:
 			sb.append(String.format(" Objeto: %s, campo: %s, valor: %s.", this.object, this.property, this.value));
 			break;
 		case E0007:

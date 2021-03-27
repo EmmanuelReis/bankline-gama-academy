@@ -14,10 +14,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import com.app.gamaacademy.cabrasdoagrest.bankline.dtos.UsuarioDTO;
-import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineApiException;
+import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.BanklineBusinessException;
 import com.app.gamaacademy.cabrasdoagrest.bankline.exceptions.ErrorCode;
 import com.app.gamaacademy.cabrasdoagrest.bankline.models.Usuario;
 import com.app.gamaacademy.cabrasdoagrest.bankline.repository.UsuarioRepository;
@@ -56,10 +55,10 @@ public class UsuarioServiceTest {
 
 		// String mensagemEsperada = "O valor para [login] não é válido!";
 
-		when(repositoryMock.save(any(Usuario.class))).thenThrow(new BanklineApiException(ErrorCode.E0008, ""));
+		when(repositoryMock.save(any(Usuario.class))).thenThrow(new BanklineBusinessException(ErrorCode.E0008, ""));
 
 		// Throwable exception =
-		assertThrows(BanklineApiException.class, () -> {
+		assertThrows(BanklineBusinessException.class, () -> {
 			service.criarUsuario(usuarioDTO);
 		});
 
@@ -78,9 +77,9 @@ public class UsuarioServiceTest {
 
 		// String mensagemEsperada = "O valor para [cpf] não é válido!";
 
-		when(repositoryMock.save(any(Usuario.class))).thenThrow(new BanklineApiException(ErrorCode.E0008, ""));
+		when(repositoryMock.save(any(Usuario.class))).thenThrow(new BanklineBusinessException(ErrorCode.E0008, ""));
 
-		/* Throwable exception = */assertThrows(BanklineApiException.class, () -> {
+		/* Throwable exception = */assertThrows(BanklineBusinessException.class, () -> {
 			service.criarUsuario(usuarioDTO);
 		});
 
@@ -99,9 +98,9 @@ public class UsuarioServiceTest {
 
 		// String mensagemEsperada = "O valor para [senha] não é válido!";
 
-		when(repositoryMock.save(any(Usuario.class))).thenThrow(new BanklineApiException(ErrorCode.E0008, ""));
+		when(repositoryMock.save(any(Usuario.class))).thenThrow(new BanklineBusinessException(ErrorCode.E0008, ""));
 
-		/* Throwable exception = */ assertThrows(BanklineApiException.class, () -> {
+		/* Throwable exception = */ assertThrows(BanklineBusinessException.class, () -> {
 			service.criarUsuario(usuarioDTO);
 		});
 
@@ -120,9 +119,9 @@ public class UsuarioServiceTest {
 
 		// String mensagemEsperada = "O valor para [nome] não é válido!";
 
-		when(repositoryMock.save(any(Usuario.class))).thenThrow(new BanklineApiException(ErrorCode.E0008, ""));
+		when(repositoryMock.save(any(Usuario.class))).thenThrow(new BanklineBusinessException(ErrorCode.E0008, ""));
 
-		/* Throwable exception = */assertThrows(BanklineApiException.class, () -> {
+		/* Throwable exception = */assertThrows(BanklineBusinessException.class, () -> {
 			service.criarUsuario(usuarioDTO);
 		});
 
@@ -139,11 +138,12 @@ public class UsuarioServiceTest {
 	public void criandoUsuarioComLoginExistente() {
 		UsuarioDTO usuarioDTO = umUsuario.buildDto();
 
-		//String mensagemEsperada = "CPF e/ou login já existe não é possível cadastrar!";
+		// String mensagemEsperada = "CPF e/ou login já existe não é possível
+		// cadastrar!";
 
 		when(repositoryMock.findByLoginEquals(any(String.class))).thenReturn(umUsuario.build());
 
-		/* Throwable exception = */assertThrows(BanklineApiException.class, () -> {
+		/* Throwable exception = */assertThrows(BanklineBusinessException.class, () -> {
 			service.criarUsuario(usuarioDTO);
 		});
 

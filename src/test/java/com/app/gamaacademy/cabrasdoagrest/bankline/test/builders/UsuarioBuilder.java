@@ -62,6 +62,6 @@ public class UsuarioBuilder {
     }
 
     public UsuarioDTO buildDto() {
-        return Mapper.convertUsuarioToDto(build());
+        return Mapper.convertUsuarioEntityToDto(build());
     }
 }
