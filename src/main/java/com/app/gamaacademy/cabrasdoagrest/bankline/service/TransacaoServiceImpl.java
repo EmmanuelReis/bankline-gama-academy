@@ -83,6 +83,12 @@ public class TransacaoServiceImpl implements TransacaoService {
 		if (entity == null)
 			throw new BanklineBusinessException(ErrorCode.E0001, "transacao", null, null);
 
+		if (entity.getValor() <= 0)
+			throw new BanklineBusinessException(ErrorCode.E0004, "transacao", "valor", entity.getValor().toString());
+
+		if (entity.getData() == null)
+			throw new BanklineBusinessException(ErrorCode.E0002, "transacao", "data", null);
+
 		if (entity.getContaOrigem() == null)
 			throw new BanklineBusinessException(ErrorCode.E0002, "transacao", "contaOrigem", null);
 		if (entity.getContaOrigem().getNumero() <= 0)
@@ -94,9 +100,6 @@ public class TransacaoServiceImpl implements TransacaoService {
 		if (contaOrigem == null)
 			throw new BanklineBusinessException(ErrorCode.E0003, "transacao", "contaOrigem",
 					entity.getContaOrigem().getNumero().toString());
-
-		if (entity.getValor() <= 0)
-			throw new BanklineBusinessException(ErrorCode.E0004, "transacao", "valor", entity.getValor().toString());
 
 		Usuario usuario = contaOrigem.getUsuario();
 		PlanoContaDTO plano = entity.getPlanoConta();

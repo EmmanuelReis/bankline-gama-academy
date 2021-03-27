@@ -15,7 +15,7 @@ import lombok.Setter;
 public class TransacaoDTO {
 
 	private Integer id = 0;
-	private Double valor;
+	private Double valor = 0.0;
 	@ApiModelProperty(value = "Data da transação")
 	private LocalDateTime data;
 	@ApiModelProperty(value = "Plano de Conta associado a transação")

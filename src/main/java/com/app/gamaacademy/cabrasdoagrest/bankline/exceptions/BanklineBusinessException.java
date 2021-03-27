@@ -63,6 +63,7 @@ public class BanklineBusinessException extends ResponseStatusException {
 			break;
 		case E0003:
 		case E0004:
+		case E0006:
 		case E0009:
 			sb.append(String.format(" Objeto: %s, campo: %s, valor: %s.", this.object, this.property, this.value));
 			break;
